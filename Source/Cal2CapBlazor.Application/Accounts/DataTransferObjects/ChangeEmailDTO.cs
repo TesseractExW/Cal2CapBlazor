@@ -1,5 +1,5 @@
 namespace Cal2CapBlazor.Application.Accounts.DataTransferObjects;
 public class ChangeEmailDTO {
-    public Guid     Id          { get; set; }
-    public string   Email       { get; set; }
+    public string NewEmail  { get; set; } = string.Empty;
+    public string Password  { get; set; } = string.Empty;
 }
