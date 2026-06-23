@@ -6,4 +6,5 @@ public interface IAccountRepository {
     Task UpdateAccountAsync(AccountEntity account, CancellationToken cancellationToken = default);
     Task DeleteAccountAsync(int id, CancellationToken cancellationToken = default);
     Task<AccountEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<AccountEntity?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
 }
