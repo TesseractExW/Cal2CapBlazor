@@ -2,7 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Cal2CapBlazor.Domain.Accounts.Exceptions;
-public class PasswordInvalidException : AccountValidationException {
+
+public class PasswordInvalidException : AccountValidationException 
+{
     private static readonly int MinLimit = PasswordLength.Item1;
     private static readonly int MaxLimit = PasswordLength.Item2;
 

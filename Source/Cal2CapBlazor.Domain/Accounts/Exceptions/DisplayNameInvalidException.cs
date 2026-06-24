@@ -2,7 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Cal2CapBlazor.Domain.Accounts.Exceptions;
-public class DisplayNameInvalidException : AccountValidationException {
+
+public class DisplayNameInvalidException : AccountValidationException
+{
     private static readonly int MinLimit = DisplayNameLength.Item1;
     private static readonly int MaxLimit = DisplayNameLength.Item2;
 
@@ -19,11 +21,14 @@ public class DisplayNameInvalidException : AccountValidationException {
         [NotNull] string? argument,
         [CallerArgumentExpression(nameof(argument))] string? paramName = null)
     {
-        if (string.IsNullOrWhiteSpace(argument)) {
+        if (string.IsNullOrWhiteSpace(argument))
+        {
             throw new DisplayNameInvalidException(
                 $"Invalid value for '{paramName}'. Display name cannot be null, empty, or consist entirely of whitespace."
             );
-        } else if (argument.Length < MinLimit || argument.Length > MaxLimit) {
+        }
+        else if (argument.Length < MinLimit || argument.Length > MaxLimit)
+        {
             throw new DisplayNameInvalidException(
                 $"Display name length constraint violated for '{paramName}'. The password length is {argument.Length}, but it must be between {MinLimit} and {MaxLimit} characters."
             );
