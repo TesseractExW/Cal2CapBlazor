@@ -36,8 +36,8 @@ public class AccountService : IAccountService
 
     protected void ThrowIfFailedToVerifyPassword(AccountEntity account, string password)
     {
-        if (!BCrypt.Net.BCrypt.EnhancedVerify(password, account.Password))
-        {
+        if (BCrypt.Net.BCrypt.EnhancedVerify(password, account.Password))
+        { 
             throw new PasswordMismatchException("The provided password doesn't match the password in database.");
         }
     }

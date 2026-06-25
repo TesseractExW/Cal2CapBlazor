@@ -1,104 +1,102 @@
-using System.Runtime.CompilerServices;
-using Cal2CapBlazor.Domain.Meals.Exceptions;
+using Cal2CapBlazor.Domain.Common.Results;
+using Cal2CapBlazor.Domain.Meals.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Meals;
+
 public class MealEntity {
     #region Description Backing Fields
 
-    private string _name = string.Empty;
-    private DateTime _inTakeTime;
+    private DateTime   _inTakeTime;
+    private string     _mealName    = string.Empty;
+    private string     _mealDetails = string.Empty;
+    private Nutritions _nutritions  = Nutritions.None;
     
-    #endregion
-
-    #region Macronutrient Backing Fields
-
-    private int? _calorie;
-    private int? _carbohydrate;
-    private int? _protein;
-    private int? _fat;
-
-    #endregion
-
-    #region Mineral Backing Fields
-
-    private int? _calcium;
-    private int? _iron;
-    private int? _magnesium;
-    private int? _zinc;
-
-    #endregion
-
-    #region Vitamin Backing Fields
-
-    private int? _vitaminA;
-    private int? _vitaminB;
-    private int? _vitaminC;
-    private int? _vitaminD;
-    private int? _vitaminE;
-
     #endregion
 
     #region Descriptions
 
-    public Guid     AccountId   { get; private set; }
-    public Guid     Id          { get; private set; }
-    public string   Name        { get => _name;             set => SetName(value);          }
-    public DateTime InTakeTime  { get => _inTakeTime;       set => SetInTakeTime(value);    }
+    public Guid       Id            { get; }
+    public Guid       AccountId     { get; }
+    public DateTime   InTakeTime    { get => _inTakeTime;   }
+    public string     MealName      { get => _mealName;     }
+    public string     MealDetails   { get => _mealDetails;  }
+    public Nutritions Nutritions    { get => _nutritions;   }
 
     #endregion
 
-    #region Macronutrients
-
-    public int? Calorie         { get => _calorie;          set => SetQuantity(ref _calorie,        value); }
-    public int? Carbohydrate    { get => _carbohydrate;     set => SetQuantity(ref _carbohydrate,   value); }
-    public int? Protein         { get => _protein;          set => SetQuantity(ref _protein,        value); }
-    public int? Fat             { get => _fat;              set => SetQuantity(ref _fat,            value); }
-
-    #endregion
-
-    #region Minerals
-
-    public int? Calcium         { get => _calcium;          set => SetQuantity(ref _calcium,        value); }
-    public int? Iron            { get => _iron;             set => SetQuantity(ref _iron,           value); }
-    public int? Magnesium       { get => _magnesium;        set => SetQuantity(ref _magnesium,      value); }
-    public int? Zinc            { get => _zinc;             set => SetQuantity(ref _zinc,           value); }
-
-    #endregion
-
-    #region Vitamins
-    
-    public int? VitaminA        { get => _vitaminA;         set => SetQuantity(ref _vitaminA,       value); }
-    public int? VitaminB        { get => _vitaminB;         set => SetQuantity(ref _vitaminB,       value); }
-    public int? VitaminC        { get => _vitaminC;         set => SetQuantity(ref _vitaminC,       value); }
-    public int? VitaminD        { get => _vitaminD;         set => SetQuantity(ref _vitaminD,       value); }
-    public int? VitaminE        { get => _vitaminE;         set => SetQuantity(ref _vitaminE,       value); }
-
-    #endregion
-
-    public MealEntity(Guid accountId)
+    protected MealEntity(Guid accountId)
     {
         AccountId = accountId;
         Id = Guid.CreateVersion7();
     }
 
+    public static Result<MealEntity> Create(
+        Guid       accountId,
+        DateTime   inTakeTime,
+        string     mealName,
+        string     mealDetails,
+        Nutritions nutritions)
+    {
+        Result result;
+        MealEntity meal = new MealEntity(accountId);
+
+        result = meal.SetInTakeTime(inTakeTime);
+        if (!result.IsSuccess)
+        {
+            return Result<MealEntity>.Failure(result.Error);
+        }
+
+        result = meal.SetMealName(mealName);
+        if (!result.IsSuccess)
+        {
+            return Result<MealEntity>.Failure(result.Error);
+        }
+
+        result = meal.SetMealDetails(mealDetails);
+        if (!result.IsSuccess)
+        {
+            return Result<MealEntity>.Failure(result.Error);
+        }
+
+        return Result<MealEntity>.Success(meal);
+    }
     #region Setters
 
-    private void SetName(string value)
+    public Result SetInTakeTime(DateTime inTakeTime)
     {
-        NameInvalidException.ThrowIfInvalid(value);
-        _name = value;
+        if (inTakeTime > DateTime.UtcNow)
+        {
+            return Result.Failure(MealErrors.IntakeTimeFutureOccurrence);
+        }
+
+        _inTakeTime = inTakeTime;
+        return Result.Success();
     }
 
-    private void SetInTakeTime(DateTime value)
+    public Result SetMealName(string mealName)
     {
-        InTakeTimeInvalidException.ThrowIfInvalid(value);
-        _inTakeTime = value;
+        if (string.IsNullOrWhiteSpace(mealName))
+        {
+            return Result.Failure(MealErrors.MealNameNullOrWhiteSpace);
+        }
+        else if (mealName.Length > MealConstants.MaximumMealNameLength)
+        {
+            return Result.Failure(MealErrors.MealNameLengthOutOfRange);
+        }
+
+        _mealName = mealName;
+        return Result.Success();
     }
-    
-    private void SetQuantity(ref int? dest, int? value, [CallerMemberName] string? propertyName = null)
+
+    public Result SetMealDetails(string mealDetails)
     {
-        NegativeQuantityException.ThrowIfNegative(value, propertyName);
-        dest = value;
+        if (mealDetails.Length > MealConstants.MaximumMealDetailsLength)
+        {
+            return Result.Failure(MealErrors.MealDetailsLengthOutOfRange);
+        }
+
+        _mealDetails = mealDetails;
+        return Result.Success();
     }
 
     #endregion
