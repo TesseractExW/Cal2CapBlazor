@@ -1,5 +1,4 @@
-using Cal2CapBlazor.Domain.Accounts.Constants;
-using Cal2CapBlazor.Domain.Common.Results;
+using Cal2CapBlazor.Domain.Common;
 
 namespace Cal2CapBlazor.Domain.Accounts;
 
@@ -60,7 +59,7 @@ public class AccountEntity
         {
             return Result.Failure(AccountErrors.EmailNullOrWhiteSpace);
         }
-        else if (!AccountConstant.EmailRegex.IsMatch(email))
+        else if (!AccountConstants.EmailRegex.IsMatch(email))
         {
             return Result.Failure(AccountErrors.EmailInvalidFormat);
         }
@@ -71,20 +70,14 @@ public class AccountEntity
 
     public Result SetHashedPassword(string hashedPassword) 
     {
-        if (hashedPassword.Length < AccountConstant.MinimumHashedPasswordLength || 
-            hashedPassword.Length > AccountConstant.MaximumHashedPasswordLength)
-        {
-            return Result.Failure(AccountErrors.HashedPasswordLengthOutOfRange);
-        }
-
         _hashedPassword = hashedPassword;
         return Result.Success();
     }
     
     public Result SetDisplayName(string displayName) 
     {
-        if (displayName.Length < AccountConstant.MinimumDisplayNameLength || 
-            displayName.Length > AccountConstant.MaximumDisplayNameLength)
+        if (displayName.Length < AccountConstants.MinimumDisplayNameLength || 
+            displayName.Length > AccountConstants.MaximumDisplayNameLength)
         {
             return Result.Failure(AccountErrors.DisplayNameLengthOutOfRange);
         }

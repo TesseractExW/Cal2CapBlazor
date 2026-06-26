@@ -1,4 +1,4 @@
-using Cal2CapBlazor.Domain.Common.Results;
+using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Meals;
@@ -58,6 +58,12 @@ public class MealEntity {
             return Result<MealEntity>.Failure(result.Error);
         }
 
+        result = meal.SetNutritions(nutritions);
+        if (!result.IsSuccess)
+        {
+            return Result<MealEntity>.Failure(result.Error);
+        }
+
         return Result<MealEntity>.Success(meal);
     }
     #region Setters
@@ -96,6 +102,34 @@ public class MealEntity {
         }
 
         _mealDetails = mealDetails;
+        return Result.Success();
+    }
+
+    public Result SetNutritions(Nutritions nutritions)
+    {
+        if (nutritions is not { 
+            // Macronutritions
+            Calorie       : null or > 0, 
+            Carbohydrate  : null or > 0,
+            Protein       : null or > 0,
+            Fat           : null or > 0,
+            // Minerals
+            Calcium       : null or > 0,
+            Iron          : null or > 0,
+            Magnesium     : null or > 0,
+            Zinc          : null or > 0,
+            // Vitamins
+            VitaminA      : null or > 0,
+            VitaminB      : null or > 0,
+            VitaminC      : null or > 0,
+            VitaminD      : null or > 0,
+            VitaminE      : null or > 0
+        })
+        {
+            return Result.Failure(MealErrors.NutritionNegativeValue);
+        }
+
+        _nutritions = nutritions;
         return Result.Success();
     }
 

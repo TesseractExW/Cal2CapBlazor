@@ -1,36 +1,21 @@
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Domain.Common;
 
 namespace Cal2CapBlazor.Domain.Meals;
 
-public static class MealErrors
+public sealed class MealErrors : ErrorContainer<MealErrors>
 {
-    public static readonly ResultError MealNameNullOrWhiteSpace =
-        new ResultError(
-            "MealErrors.MealNameNullOrWhiteSpace",
-            "Meal name cannot be null, empty or whitespaces."
-        );
+    public static ResultError MealNameNullOrWhiteSpace    =>
+        Create("The meal name cannot be empty or whitespaces.");
 
-    public static readonly ResultError MealNameLengthOutOfRange =
-        new ResultError(
-            "MealErrors.MealNameLengthOutOfRange",
-            "Length of meal name must not exceed MealConstants.MaximumMealNameLength."
-        );
+    public static ResultError MealNameLengthOutOfRange    =>
+        Create($"The length of meal name must not exceed {MealConstants.MaximumMealNameLength}.");
 
-    public static readonly ResultError MealDetailsLengthOutOfRange =
-        new ResultError(
-            "MealErrors.MealDetailsLengthOutOfRange",
-            "Length of meal details must not exceed MealConstants.MaximumMealDetailsLength."
-        );
+    public static ResultError MealDetailsLengthOutOfRange =>
+        Create($"The length of meal details must not exceed {MealConstants.MaximumMealDetailsLength}.");
 
-    public static readonly ResultError IntakeTimeFutureOccurrence =
-        new ResultError(
-            "MealErrors.IntakeTimeFutureOccurrence",
-            "Intake time cannot be set to future."
-        );
+    public static ResultError IntakeTimeFutureOccurrence  =>
+        Create("The intake time cannot be set to future.");
 
-    public static readonly ResultError NutritionNegativeValue =
-        new ResultError(
-            "MealErrosrs.NutritionNegativeAmount",
-            "Value of nutrition cannot be negative."
-        );
+    public static ResultError NutritionNegativeValue      =>
+        Create("A value of nutrition cannot be negative.");
 }

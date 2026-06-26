@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
 
-namespace Cal2CapBlazor.Domain.Accounts.Constants;
+namespace Cal2CapBlazor.Domain.Accounts;
 
-public static class AccountConstant
+public static class AccountConstants
 {
     #region Length Related
 

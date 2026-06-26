@@ -1,6 +1,4 @@
-using Cal2CapBlazor.Domain.Common.ValueObjects;
-
-namespace Cal2CapBlazor.Domain.Common.Results;
+namespace Cal2CapBlazor.Domain.Common;
 
 public class Result
 {

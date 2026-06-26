@@ -1,4 +1,4 @@
-namespace Cal2CapBlazor.Domain.Common.ValueObjects;
+namespace Cal2CapBlazor.Domain.Common;
 
 public record ResultError(string Id, string Message)
 {

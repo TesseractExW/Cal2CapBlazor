@@ -1,30 +1,15 @@
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Domain.Common;
 
 namespace Cal2CapBlazor.Domain.Accounts;
 
-public static class AccountErrors
+public sealed class AccountErrors : ErrorContainer<AccountErrors>
 {
-    public static readonly ResultError EmailNullOrWhiteSpace =
-        new ResultError(
-            "AccountErrors.EmailNullOrWhiteSpace", 
-            "Email cannot be null, empty or whitespaces."
-        );
+    public static ResultError EmailNullOrWhiteSpace          => 
+        Create("The email address cannot be empty or consist entirely of whitespace.");
 
-    public static readonly ResultError EmailInvalidFormat =
-        new ResultError(
-            "AccountErrors.EmailInvalidFormat",
-            "Email must follow AccountConstants.EmailRegex."
-        );
+    public static ResultError EmailInvalidFormat             => 
+        Create("The provided email address is not in a valid format.");
 
-    public static readonly ResultError DisplayNameLengthOutOfRange =
-        new ResultError(
-            "AccountErrors.DisplayNameLengthOutOfRange",
-            "Length of display name must be between AccountConstants.MinimumDisplayNameLength and AccountConstants.MaximumDisplayNameLength"
-        );
-
-    public static readonly ResultError HashedPasswordLengthOutOfRange =
-        new ResultError(
-            "AccountErrors.HashedPasswordLengthOutOfRange",
-            "Length of password must be between AccountConstants.MinimumHashedPasswordLength and AccountConstants.MaximumHashedPasswordLength"
-        );
+    public static ResultError DisplayNameLengthOutOfRange    => 
+        Create($"The display name length must be between {AccountConstants.MinimumDisplayNameLength} and {AccountConstants.MaximumDisplayNameLength} characters.");
 }
