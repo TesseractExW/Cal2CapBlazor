@@ -17,14 +17,14 @@ public record ChangeDisplayNameCommand(
 
 [RequireRole("User")]
 internal sealed class ChangeDisplayNameCommandHandler(
-    IAccountRepository repository, 
+    IAccountRepository accountRepository, 
     ICurrentUserService currentUser,
     IPasswordHasher passwordHasher)
     : IRequestHandler<ChangeDisplayNameCommand, Result>
 {
     public async Task<Result> Handle(ChangeDisplayNameCommand request, CancellationToken cancellationToken)
     {
-        Result<Account> accountResult = await repository.GetByIdAsync(currentUser.AccountId, cancellationToken);
+        Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
             return accountResult;
@@ -43,7 +43,7 @@ internal sealed class ChangeDisplayNameCommandHandler(
             return updateResult; 
         }
 
-        return await repository.UpdateAccountAsync(account, cancellationToken);
+        return await accountRepository.UpdateAccountAsync(account, cancellationToken);
     }
 }
 

@@ -19,14 +19,14 @@ public record CreateAccountCommand(
 
 [GuestOnly]
 internal sealed class CreateAccountCommandHandler(
-    IAccountRepository repository,
+    IAccountRepository accountRepository,
     IPasswordHasher passwordHasher)
     : IRequestHandler<CreateAccountCommand, Result> 
 {
     public async Task<Result> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
         EmailAddress emailAddress = EmailAddress.Create(request.EmailAddress).Value;
-        Result<Account> getByEmailResult = await repository.GetByEmailAsync(emailAddress);
+        Result<Account> getByEmailResult = await accountRepository.GetByEmailAsync(emailAddress);
         if (getByEmailResult.isSuccess)
         {
             return Result.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
@@ -38,7 +38,7 @@ internal sealed class CreateAccountCommandHandler(
 
         Account account = new Account(Guid.CreateVersion7(), emailAddress, hashedPassword, displayName);
 
-        return await repository.AddAccountAsync(account);
+        return await accountRepository.AddAccountAsync(account);
     }
 }
 

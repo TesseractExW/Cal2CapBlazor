@@ -14,14 +14,14 @@ public record ChangeEmailAddressCommand(string NewEmailAddress, string Password)
 
 [RequireRole("User")]
 internal sealed class ChangeEmailAddressCommandHandler(
-    IAccountRepository repository,
+    IAccountRepository accountRepository,
     ICurrentUserService currentUser, 
     IPasswordHasher passwordHasher)
     : IRequestHandler<ChangeEmailAddressCommand, Result>
 {
     public async Task<Result> Handle(ChangeEmailAddressCommand request, CancellationToken cancellationToken)
     {
-        Result<Account> accountResult = await repository.GetByIdAsync(currentUser.AccountId, cancellationToken);
+        Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
             return accountResult;
@@ -40,13 +40,13 @@ internal sealed class ChangeEmailAddressCommandHandler(
             return updateResult; 
         }
 
-        Result<Account> getByEmailResult = await repository.GetByEmailAsync(newEmailAddress);
+        Result<Account> getByEmailResult = await accountRepository.GetByEmailAsync(newEmailAddress);
         if (getByEmailResult.isSuccess)
         {
             return Result.Failure(new ErrorResult("ChangeEmail.EmailAlreadyInUse", "The provided email has already been in use."));
         }
 
-        return await repository.UpdateAccountAsync(account, cancellationToken);
+        return await accountRepository.UpdateAccountAsync(account, cancellationToken);
     }
 }
 

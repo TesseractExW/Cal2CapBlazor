@@ -9,6 +9,7 @@ public class Meal(
     Guid accountId, 
     MealName name, 
     MealDetails details, 
+    MealType mealType,
     DateTime inTakeTime, 
     NutrientProfile nutrientProfile)
 {
@@ -17,6 +18,7 @@ public class Meal(
 
     public MealName MealName { get; private set; } = name;
     public MealDetails MealDetails { get; private set; } = details;
+    public MealType MealType { get; set; } = mealType;
 
     public DateTime InTakeTime { get; private set; } = inTakeTime;
     public NutrientProfile NutritentProfile { get; private set; } = nutrientProfile;
@@ -37,6 +39,14 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("MealDetails", "meal details"));
         }
+
+        return Result.Success();
+    }
+
+
+    public Result UpdateMealType(MealType mealType)
+    {
+        MealType = mealType;
 
         return Result.Success();
     }

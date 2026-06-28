@@ -18,14 +18,14 @@ public record ChangePasswordCommand(
 
 [RequireRole("User")]
 internal sealed class ChangePasswordCommandHandler(
-    IAccountRepository repository,
+    IAccountRepository accountRepository,
     ICurrentUserService currentUser,
     IPasswordHasher passwordHasher)
     : IRequestHandler<ChangePasswordCommand, Result>
 {
     public async Task<Result> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        Result<Account> accountResult = await repository.GetByIdAsync(currentUser.AccountId, cancellationToken);
+        Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
             return accountResult;
@@ -47,7 +47,7 @@ internal sealed class ChangePasswordCommandHandler(
             return updateResult;
         }
 
-        return await repository.UpdateAccountAsync(account, cancellationToken);
+        return await accountRepository.UpdateAccountAsync(account, cancellationToken);
     }
 }
 
