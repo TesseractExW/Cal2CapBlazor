@@ -3,8 +3,9 @@ using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
 using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
 
-namespace Cal2CapBlazor.Application.Common;
+namespace Cal2CapBlazor.Application.Common.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
@@ -34,7 +35,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
         if (validationFailures.Any())
         {
             ValidationFailure firstFailure = validationFailures.First();
-            ResultError error = new ResultError(
+            ErrorResult error = new ErrorResult(
                 $"{typeof(TRequest).Name},ValidationError",
                 firstFailure.ErrorMessage
             );
@@ -44,7 +45,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
             {
                 MethodInfo failureMethod = typeof(Result<>)
                     .MakeGenericType(typeof(TResponse).GetGenericArguments()[0])
-                    .GetMethod("Failure", [typeof(ResultError)])!;
+                    .GetMethod("Failure", [typeof(ErrorResult)])!;
 
                 return (TResponse)failureMethod!.Invoke(null, [error])!;
             }

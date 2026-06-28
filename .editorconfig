@@ -1,0 +1,6 @@
+[*.cs]
+# Ensure braces are pushed to a new line for everything (methods, control blocks, types, etc.)
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
