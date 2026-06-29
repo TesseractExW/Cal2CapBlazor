@@ -7,8 +7,8 @@ namespace Cal2CapBlazor.Domain.Meals;
 public class Meal(
     Guid id, 
     Guid accountId, 
-    MealName name, 
-    MealDetails details, 
+    MealName mealName, 
+    MealDetails mealDetails, 
     MealType mealType,
     DateTime inTakeTime, 
     NutrientProfile nutrientProfile)
@@ -16,12 +16,12 @@ public class Meal(
     public Guid Id { get; } = id;
     public Guid AccountId { get; } = accountId;
 
-    public MealName MealName { get; private set; } = name;
-    public MealDetails MealDetails { get; private set; } = details;
+    public MealName MealName { get; private set; } = mealName;
+    public MealDetails MealDetails { get; private set; } = mealDetails; 
     public MealType MealType { get; set; } = mealType;
 
     public DateTime InTakeTime { get; private set; } = inTakeTime;
-    public NutrientProfile NutritentProfile { get; private set; } = nutrientProfile;
+    public NutrientProfile NutrientProfile { get; private set; } = nutrientProfile;
 
     public Result UpdateMealName(MealName mealName)
     {
@@ -63,7 +63,7 @@ public class Meal(
 
     public Result UpdateNutrientProfile(NutrientProfile nutrientProfile)
     {
-        if (nutrientProfile == NutritentProfile)
+        if (nutrientProfile == NutrientProfile)
         {
             return Result.Failure(new UnchangedError("NutrientProfile", "nutrient profile"));
         }

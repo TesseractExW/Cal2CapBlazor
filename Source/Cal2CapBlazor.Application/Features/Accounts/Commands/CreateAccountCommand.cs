@@ -20,7 +20,7 @@ public record CreateAccountCommand(
 [GuestOnly]
 internal sealed class CreateAccountCommandHandler(
     IAccountRepository accountRepository,
-    IPasswordHasher passwordHasher)
+    IPasswordHasherService passwordHasher)
     : IRequestHandler<CreateAccountCommand, Result> 
 {
     public async Task<Result> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
@@ -50,8 +50,8 @@ public class CreateAccountCommandValidator : AbstractValidator<CreateAccountComm
         RuleFor(e => e.EmailAddress).MustBeValueObject(EmailAddress.Create);
         RuleFor(e => e.Password).MustBeValueObject(Password.Create);
 
+        RuleFor(e => e.ConfirmPassword).MustBeValueObject(Password.Create);
         RuleFor(e => e.ConfirmPassword)
-            .NotEmpty()
             .Equal(x => x.Password)
             .WithErrorCode("The passwords do not match.");
     }

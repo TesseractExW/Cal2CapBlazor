@@ -20,7 +20,7 @@ public record ChangePasswordCommand(
 internal sealed class ChangePasswordCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser,
-    IPasswordHasher passwordHasher)
+    IPasswordHasherService passwordHasher)
     : IRequestHandler<ChangePasswordCommand, Result>
 {
     public async Task<Result> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)

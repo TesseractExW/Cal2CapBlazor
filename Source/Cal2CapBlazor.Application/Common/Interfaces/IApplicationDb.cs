@@ -8,6 +8,4 @@ public interface IApplicationDbContext
 {
     DbSet<Account> Accounts { get; }
     DbSet<Meal> Meals { get; }
-
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

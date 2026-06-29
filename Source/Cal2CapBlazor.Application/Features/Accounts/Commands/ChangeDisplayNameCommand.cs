@@ -19,7 +19,7 @@ public record ChangeDisplayNameCommand(
 internal sealed class ChangeDisplayNameCommandHandler(
     IAccountRepository accountRepository, 
     ICurrentUserService currentUser,
-    IPasswordHasher passwordHasher)
+    IPasswordHasherService passwordHasher)
     : IRequestHandler<ChangeDisplayNameCommand, Result>
 {
     public async Task<Result> Handle(ChangeDisplayNameCommand request, CancellationToken cancellationToken)

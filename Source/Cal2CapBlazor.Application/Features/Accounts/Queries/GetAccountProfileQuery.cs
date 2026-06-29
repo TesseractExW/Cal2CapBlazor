@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Application.Common.Security;
 
 namespace Cal2CapBlazor.Application.Accounts.Queries;
 
@@ -10,6 +11,7 @@ public record AccountProfileResponse(string Email, string DisplayName);
 
 public record GetAccountProfitQuery : IRequest<Result<AccountProfileResponse>>;
 
+[RequireRole("User")]
 internal sealed class GetAccountProfitQueryHandler(
     IApplicationDbContext dbContext,
     ICurrentUserService currentUser)

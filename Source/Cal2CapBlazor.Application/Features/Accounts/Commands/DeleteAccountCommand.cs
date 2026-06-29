@@ -20,7 +20,7 @@ public record DeleteAccountCommand(
 internal sealed class DeleteAccountCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser,
-    IPasswordHasher passwordHasher)
+    IPasswordHasherService passwordHasher)
     : IRequestHandler<CreateAccountCommand, Result> 
 {
     public async Task<Result> Handle(CreateAccountCommand request, CancellationToken cancellationToken)

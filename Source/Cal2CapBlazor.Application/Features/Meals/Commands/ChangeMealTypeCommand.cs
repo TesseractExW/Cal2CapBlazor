@@ -8,7 +8,7 @@ using Cal2CapBlazor.Application.Common.Security;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
 
-public record ChangeMealTypeCommand(Guid Id, MealType MealType) : IRequest<Result>;
+public record ChangeMealTypeCommand(Guid Id, int MealType) : IRequest<Result>;
 
 [RequireRole("User")]
 internal sealed class ChangeMealTypeCommandHandler(
@@ -30,7 +30,13 @@ internal sealed class ChangeMealTypeCommandHandler(
             return Result.Failure(new ErrorResult("ChangeMeal.InvalidOwnership", "The meal belongs to different ownership."));
         }
 
-        Result updateResult = meal.UpdateMealType(request.MealType);
+        bool isDefined = Enum.IsDefined((MealType)request.MealType);
+        if (!isDefined)
+        {
+            return Result.Failure(new ErrorResult("ChangeMeal.InvalidMealEnum", "The meal type is corrupted."));
+        }
+
+        Result updateResult = meal.UpdateMealType((MealType)request.MealType);
         if (!updateResult.IsSuccess)
         {
             return updateResult;
@@ -40,4 +46,4 @@ internal sealed class ChangeMealTypeCommandHandler(
     }
 }
 
-// no validation for meal type, because it's a enum
+// no validation for meal type, because it's an enum

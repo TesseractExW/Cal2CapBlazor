@@ -16,7 +16,7 @@ public record ChangeEmailAddressCommand(string NewEmailAddress, string Password)
 internal sealed class ChangeEmailAddressCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser, 
-    IPasswordHasher passwordHasher)
+    IPasswordHasherService passwordHasher)
     : IRequestHandler<ChangeEmailAddressCommand, Result>
 {
     public async Task<Result> Handle(ChangeEmailAddressCommand request, CancellationToken cancellationToken)
