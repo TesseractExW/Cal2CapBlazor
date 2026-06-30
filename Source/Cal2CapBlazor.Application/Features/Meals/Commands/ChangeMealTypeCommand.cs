@@ -5,6 +5,7 @@ using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
 using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Application.Common.Security;
+using FluentValidation;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
 
@@ -46,4 +47,13 @@ internal sealed class ChangeMealTypeCommandHandler(
     }
 }
 
-// no validation for meal type, because it's an enum
+public class ChangeMealTypeCommandValidator : AbstractValidator<ChangeMealTypeCommand>
+{
+
+    public ChangeMealTypeCommandValidator()
+    {
+        RuleFor(e => e.MealType)
+            .LessThan((int)MealType.Heavy * 2 - 1)
+            .WithErrorCode("The meal type provided is invalid.");
+    }
+}

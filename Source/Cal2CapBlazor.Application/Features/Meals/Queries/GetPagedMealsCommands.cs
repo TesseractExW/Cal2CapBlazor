@@ -48,6 +48,7 @@ internal sealed class GetPagedMealsQueryHandler(
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
             .Select(e => new MealItemDto(
+                e.Id,
                 e.MealName.Value,
                 e.MealDetails.Value,
                 (int)e.MealType,

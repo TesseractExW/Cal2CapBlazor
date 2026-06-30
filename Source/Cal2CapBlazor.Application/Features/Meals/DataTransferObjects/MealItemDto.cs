@@ -1,6 +1,7 @@
 namespace Cal2CapBlazor.Application.Meals.DataTransferObjects;
 
 public record MealItemDto(
+    Guid Id,
     string MealName,
     string MealDetails,
     int MealType, 

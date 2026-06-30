@@ -15,21 +15,21 @@ public record CreateAccountCommand(
     string EmailAddress, 
     string Password, 
     string ConfirmPassword) 
-    : IRequest<Result>;
+    : IRequest<Result<Guid>>;
 
 [GuestOnly]
 internal sealed class CreateAccountCommandHandler(
     IAccountRepository accountRepository,
     IPasswordHasherService passwordHasher)
-    : IRequestHandler<CreateAccountCommand, Result> 
+    : IRequestHandler<CreateAccountCommand, Result<Guid>>
 {
-    public async Task<Result> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
     {
         EmailAddress emailAddress = EmailAddress.Create(request.EmailAddress).Value;
         Result<Account> getByEmailResult = await accountRepository.GetByEmailAsync(emailAddress);
         if (getByEmailResult.isSuccess)
         {
-            return Result.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
+            return Result<Guid>.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
         }
 
         string hashedString = passwordHasher.Hash(request.Password);
@@ -38,7 +38,13 @@ internal sealed class CreateAccountCommandHandler(
 
         Account account = new Account(Guid.CreateVersion7(), emailAddress, hashedPassword, displayName);
 
-        return await accountRepository.AddAccountAsync(account);
+        Result addResult = await accountRepository.AddAccountAsync(account, cancellationToken);
+        if (!addResult.IsSuccess)
+        {
+            return Result<Guid>.Failure(addResult.Error);
+        }
+
+        return Result<Guid>.Success(account.Id);
     }
 }
 
@@ -50,8 +56,9 @@ public class CreateAccountCommandValidator : AbstractValidator<CreateAccountComm
         RuleFor(e => e.EmailAddress).MustBeValueObject(EmailAddress.Create);
         RuleFor(e => e.Password).MustBeValueObject(Password.Create);
 
-        RuleFor(e => e.ConfirmPassword).MustBeValueObject(Password.Create);
         RuleFor(e => e.ConfirmPassword)
+            .NotEmpty()
+            .WithErrorCode("The confirmation password cannot be empty or consist only of whitespaces.")
             .Equal(x => x.Password)
             .WithErrorCode("The passwords do not match.");
     }

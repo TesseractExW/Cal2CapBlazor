@@ -1,0 +1,585 @@
+@page "/dashboard"
+@rendermode InteractiveServer
+
+@using MediatR
+@using Cal2CapBlazor.Domain.Common
+@using Cal2CapBlazor.Application.Meals.Queries
+@using Cal2CapBlazor.Application.Meals.DataTransferObjects
+@using Cal2CapBlazor.Application.Meals.Commands
+
+@inject ISender Mediator
+
+<PageTitle>Nutrition Dashboard</PageTitle>
+
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0 p-4 mb-4 bg-white">
+        <div class="row align-items-center g-3">
+            <div class="col-md-5">
+                <h1 class="h3 fw-bold text-dark mb-1"><i class="bi bi-activity text-primary me-2"></i>Nutrient Tracker Dashboard</h1>
+                <p class="text-muted small mb-0">Manage tracked meals, record entries, and refine micronutrient profiles.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                    <input type="text" class="form-control bg-light border-start-0 ps-0" 
+                           placeholder="Search meals by name..." 
+                           @bind="searchTerm" 
+                           @bind:event="oninput" 
+                           @onkeyup="HandleSearchKeyup" />
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end d-flex gap-2">
+                <button class="btn btn-outline-secondary w-50" @onclick="() => LoadMealsAsync(1)">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+                </button>
+                <button class="btn btn-success w-50" @onclick="InitializeMealCreation">
+                    <i class="bi bi-plus-lg me-1"></i> Add Meal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center my-5 py-5">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading data...</span>
+            </div>
+        </div>
+    }
+    else if (mealsList == null || !mealsList.Any())
+    {
+        <div class="card shadow-sm border-0 text-center p-5 bg-white">
+            <div class="card-body">
+                <i class="bi bi-basket3 display-3 text-muted mb-3 d-block"></i>
+                <h4 class="fw-bold">No Records Found</h4>
+                <p class="text-muted mx-auto" style="max-width: 400px;">No meals matched your profile criteria. Get started by creating a brand new record entry!</p>
+                <button class="btn btn-primary mt-2" @onclick="InitializeMealCreation">Create First Meal</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm border-0 bg-white mb-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-uppercase fs-7 fw-bold text-secondary border-bottom">
+                        <tr>
+                            <th class="ps-4">Meal Meta</th>
+                            <th>Time</th>
+                            <th>Macronutrients</th>
+                            <th>Minerals</th>
+                            <th>Vitamins</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var meal in mealsList)
+                        {
+                            <tr>
+                                <td class="ps-4 py-3">
+                                    <span class="fw-bold text-dark d-block fs-6">@meal.MealName</span>
+                                    <small class="text-muted d-block text-truncate border-start border-2 ps-2 mt-1" style="max-width: 260px;">
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="small fw-semibold text-dark">@meal.InTakeTime.ToString("yyyy-MM-dd")</div>
+                                    <div class="text-muted small">@meal.InTakeTime.ToString("hh:mm tt")</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1" style="max-width: 220px;">
+                                        <span class="badge bg-dark bg-opacity-75">🔥 @meal.Calorie kcal</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">P: @meal.Protein g</span>
+                                        <span class="badge bg-warning bg-opacity-10 text-dark border border-warning border-opacity-50">C: @meal.Carbohydrate g</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">F: @meal.Fat g</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1 small-badge-group" style="max-width: 200px;">
+                                        <span class="badge bg-light text-dark border">Ca: @meal.Calcium mg</span>
+                                        <span class="badge bg-light text-dark border">Fe: @meal.Iron mg</span>
+                                        <span class="badge bg-light text-dark border">Mg: @meal.Magnesium mg</span>
+                                        <span class="badge bg-light text-dark border">Zn: @meal.Zinc mg</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1 small-badge-group" style="max-width: 220px;">
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark">A: @meal.VitaminA IU</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark">B: @meal.VitaminB mg</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark">C: @meal.VitaminC mg</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark">D: @meal.VitaminD IU</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-dark">E: @meal.VitaminE mg</span>
+                                    </div>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-inline-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary px-3 rounded-pill" @onclick="() => InitializeNutrientModification(meal)">
+                                            <i class="bi bi-sliders2-vertical me-1"></i> Profile
+                                        </button>
+                                        @* <button class="btn btn-sm btn-outline-danger px-2 rounded-pill" @onclick="() => ProcessMealDeletionCommand(meal.Id)" title="Delete Meal Record">
+                                            <i class="bi bi-trash"></i>
+                                        </button> *@
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer bg-transparent border-top d-flex justify-content-between align-items-center py-3">
+                <span class="text-muted small">
+                    Showing page <strong>@currentPageIndex</strong> of <strong>@totalPageCount</strong> (@totalRecordCount total meals)
+                </span>
+                <nav aria-label="Meals Query Pagination Pages">
+                    <ul class="pagination pagination-sm mb-0 shadow-sm">
+                        <li class="page-item @(currentPageIndex <= 1 ? "disabled" : "")">
+                            <button class="page-link" @onclick="() => LoadMealsAsync(currentPageIndex - 1)"><i class="bi bi-chevron-left"></i></button>
+                        </li>
+                        @for (int i = 1; i <= totalPageCount; i++)
+                        {
+                            var targetPage = i;
+                            <li class="page-item @(currentPageIndex == targetPage ? "active" : "")">
+                                <button class="page-link" @onclick="() => LoadMealsAsync(targetPage)">@targetPage</button>
+                            </li>
+                        }
+                        <li class="page-item @(currentPageIndex >= totalPageCount ? "disabled" : "")">
+                            <button class="page-link" @onclick="() => LoadMealsAsync(currentPageIndex + 1)"><i class="bi bi-chevron-right"></i></button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    }
+</div>
+
+@if (isAddingMeal && newMealModel != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px);" role="dialog">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
+                <div class="modal-header bg-success text-white border-0 py-3">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">Record New Meal</h5>
+                        <small class="text-white-50">Create a clean baseline meal record</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" @onclick="TerminateModalContext"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    @if (!string.IsNullOrEmpty(feedbackMessage))
+                    {
+                        <div class="alert alert-warning shadow-sm small border-0 mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @feedbackMessage
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Meal Name</label>
+                        <input type="text" class="form-control" placeholder="e.g., Grilled Chicken Salad" @bind="newMealModel.MealName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold">Details / Description</label>
+                        <textarea class="form-control" rows="2" placeholder="Optional notes regarding the ingredients..." @bind="newMealModel.MealDetails"></textarea>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Meal Type Category</label>
+                            <select class="form-select" @bind="newMealModel.MealType">
+                                <option value="0">None</option>
+                                <option value="1">Lunch</option>
+                                <option value="2">Dinner</option>
+                                <option value="4">Snack</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold">Intake Time</label>
+                            <input type="datetime-local" class="form-control" @bind="newMealModel.InTakeTime" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-white border-0 py-3">
+                    <button type="button" class="btn btn-light px-4 border" @onclick="TerminateModalContext" disabled="@isSubmitting">Cancel</button>
+                    <button type="button" class="btn btn-success px-4" @onclick="ProcessMealCreationCommand" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Saving...</span>
+                        }
+                        else
+                        {
+                            <span>Create Record</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (isModifyingNutrients && activeFormModel != null)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background-color: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px);" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-3 overflow-hidden">
+                <div class="modal-header bg-dark text-white border-0 py-3">
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">Re-Profile Meal Nutrients</h5>
+                        <small class="text-white-50">Modifying profile values for target record item.</small>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" @onclick="TerminateModalContext"></button>
+                </div>
+                <div class="modal-body p-4 bg-light">
+                    
+                    @if (!string.IsNullOrEmpty(feedbackMessage))
+                    {
+                        <div class="alert alert-warning shadow-sm small border-0 mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> @feedbackMessage
+                        </div>
+                    }
+
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-primary fw-bold tracking-wider fs-7 border-bottom pb-2 mb-3"><i class="bi bi-pie-chart-fill me-2"></i>Macronutrients Mapping</h6>
+                            <div class="row g-3">
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Calories (kcal)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Calorie" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Carbohydrates (g)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Carbohydrate" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Protein (g)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Protein" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Fat (g)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Fat" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-success fw-bold tracking-wider fs-7 border-bottom pb-2 mb-3"><i class="bi bi-gem me-2"></i>Minerals Matrix (mg)</h6>
+                            <div class="row g-3">
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Calcium</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Calcium" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Iron</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Iron" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Magnesium</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Magnesium" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Zinc</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.Zinc" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-warning fw-bold tracking-wider fs-7 border-bottom pb-2 mb-3"><i class="bi bi-capsule-compartment me-2"></i>Vitamins Profile Matrix</h6>
+                            <div class="row g-3">
+                                <div class="col-md-2 col-4">
+                                    <label class="form-label small fw-semibold">Vit A (IU)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.VitaminA" />
+                                </div>
+                                <div class="col-md-2 col-4">
+                                    <label class="form-label small fw-semibold">Vit B (mg)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.VitaminB" />
+                                </div>
+                                <div class="col-md-2 col-4">
+                                    <label class="form-label small fw-semibold">Vit C (mg)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.VitaminC" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Vit D (IU)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.VitaminD" />
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <label class="form-label small fw-semibold">Vit E (mg)</label>
+                                    <input type="number" class="form-control" @bind="activeFormModel.VitaminE" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-white border-0 py-3">
+                    <button type="button" class="btn btn-light px-4 border" @onclick="TerminateModalContext" disabled="@isSubmitting">Cancel</button>
+                    <button type="button" class="btn btn-dark px-4" @onclick="ProcessNutrientUpdateCommand" disabled="@isSubmitting">
+                        @if (isSubmitting)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Saving Changes...</span>
+                        }
+                        else
+                        {
+                            <span>Apply Command Changes</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private IReadOnlyCollection<MealItemDto> mealsList = Array.Empty<MealItemDto>();
+    private bool isLoading = true;
+    private bool isModifyingNutrients = false;
+    private bool isAddingMeal = false;
+    private bool isSubmitting = false;
+
+    private int currentPageIndex = 1;
+    private int totalPageCount = 1;
+    private int totalRecordCount = 0;
+    private const int QueryPageSize = 8;
+    
+    private string searchTerm = string.Empty;
+    private string feedbackMessage = string.Empty;
+    private NutrientFormState? activeFormModel;
+    private MealCreationState? newMealModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMealsAsync(1);
+    }
+
+    private async Task LoadMealsAsync(int targetedPage)
+    {
+        isLoading = true;
+        currentPageIndex = targetedPage;
+        
+        try
+        {
+            var query = new GetPagedMealsQuery(currentPageIndex, QueryPageSize, searchTerm);
+            Result<PagedMealsQueryReponse> responseResult = await Mediator.Send(query);
+
+            if (responseResult != null && responseResult.IsSuccess)
+            {
+                mealsList = responseResult.Value.Items;
+                totalPageCount = responseResult.Value.TotalPage;
+                totalRecordCount = responseResult.Value.TotalCount;
+            }
+            else
+            {
+                mealsList = Array.Empty<MealItemDto>();
+                totalPageCount = 1;
+                totalRecordCount = 0;
+            }
+        }
+        catch
+        {
+            mealsList = Array.Empty<MealItemDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task HandleSearchKeyup(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" || string.IsNullOrEmpty(searchTerm))
+        {
+            await LoadMealsAsync(1);
+        }
+    }
+
+    private void InitializeMealCreation()
+    {
+        feedbackMessage = string.Empty;
+        newMealModel = new MealCreationState
+        {
+            InTakeTime = DateTime.Now
+        };
+        isAddingMeal = true;
+    }
+
+    private void InitializeNutrientModification(MealItemDto meal)
+    {
+        feedbackMessage = string.Empty;
+        activeFormModel = new NutrientFormState
+        {
+            Id = meal.Id,
+            Calorie = meal.Calorie,
+            Carbohydrate = meal.Carbohydrate,
+            Protein = meal.Protein,
+            Fat = meal.Fat,
+            Calcium = meal.Calcium,
+            Iron = meal.Iron,
+            Magnesium = meal.Magnesium,
+            Zinc = meal.Zinc,
+            VitaminA = meal.VitaminA,
+            VitaminB = meal.VitaminB,
+            VitaminC = meal.VitaminC,
+            VitaminD = meal.VitaminD,
+            VitaminE = meal.VitaminE
+        };
+        isModifyingNutrients = true;
+    }
+
+    private void TerminateModalContext()
+    {
+        isModifyingNutrients = false;
+        isAddingMeal = false;
+        activeFormModel = null;
+        newMealModel = null;
+    }
+
+    // Command Implementation: CreateMealCommand
+    private async Task ProcessMealCreationCommand()
+    {
+        if (newMealModel == null || string.IsNullOrWhiteSpace(newMealModel.MealName))
+        {
+            feedbackMessage = "Meal Name cannot be left completely blank.";
+            return;
+        }
+
+        isSubmitting = true;
+        feedbackMessage = string.Empty;
+
+        try
+        {
+            var command = new CreateMealCommand(
+                newMealModel.MealName,
+                newMealModel.MealDetails,
+                newMealModel.MealType,
+                newMealModel.InTakeTime
+            );
+
+            var result = await Mediator.Send(command);
+
+            if (result.IsSuccess)
+            {
+                TerminateModalContext();
+                await LoadMealsAsync(1); // Return to page 1 to see the new entry
+            }
+            else
+            {
+                feedbackMessage = result.Error.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            feedbackMessage = $"Creation dispatch failure: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    // Command Implementation: DeleteMealCommand
+    @* private async Task ProcessMealDeletionCommand(Guid id)
+    {
+        isLoading = true;
+        try
+        {
+            var command = new DeleteMealCommand(id);
+            var result = await Mediator.Send(command);
+
+            if (result.IsSuccess)
+            {
+                // Refresh our paged collection set safely
+                await LoadMealsAsync(currentPageIndex);
+            }
+        }
+        catch
+        {
+            // Handle error silently or push a modal notification flag state
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    } *@
+
+    private async Task ProcessNutrientUpdateCommand()
+    {
+        if (activeFormModel == null) return;
+        
+        isSubmitting = true;
+        feedbackMessage = string.Empty;
+
+        try
+        {
+            var command = new ChangeMealNutrientCommand(
+                activeFormModel.Id,
+                activeFormModel.Calorie,
+                activeFormModel.Carbohydrate,
+                activeFormModel.Protein,
+                activeFormModel.Fat,
+                activeFormModel.Calcium,
+                activeFormModel.Iron,
+                activeFormModel.Magnesium,
+                activeFormModel.Zinc,
+                activeFormModel.VitaminA,
+                activeFormModel.VitaminB,
+                activeFormModel.VitaminC,
+                activeFormModel.VitaminD,
+                activeFormModel.VitaminE
+            );
+
+            var commandResult = await Mediator.Send(command);
+
+            if (commandResult.IsSuccess)
+            {
+                TerminateModalContext();
+                await LoadMealsAsync(currentPageIndex);
+            }
+            else
+            {
+                feedbackMessage = "Command rejected: Validation constraints or ownership validation failed.";
+            }
+        }
+        catch (Exception ex)
+        {
+            feedbackMessage = $"Internal pipeline dispatch failure: {ex.Message}";
+        }
+        finally
+        {
+            isSubmitting = false;
+        }
+    }
+
+    public class NutrientFormState
+    {
+        public Guid Id { get; set; }
+        public int? Calorie { get; set; }
+        public int? Carbohydrate { get; set; }
+        public int? Protein { get; set; }
+        public int? Fat { get; set; }
+        public int? Calcium { get; set; }
+        public int? Iron { get; set; }
+        public int? Magnesium { get; set; }
+        public int? Zinc { get; set; }
+        public int? VitaminA { get; set; }
+        public int? VitaminB { get; set; }
+        public int? VitaminC { get; set; }
+        public int? VitaminD { get; set; }
+        public int? VitaminE { get; set; }
+    }
+
+    public class MealCreationState
+    {
+        public string MealName { get; set; } = string.Empty;
+        public string MealDetails { get; set; } = string.Empty;
+        public int MealType { get; set; } = 0; // Standard Enum mapping index layer default (e.g. Breakfast)
+        public DateTime InTakeTime { get; set; }
+    }
+}
+
+<style>
+    .fs-7 { font-size: 0.75rem; }
+    .tracking-wider { letter-spacing: 0.05em; }
+    .small-badge-group .badge {
+        font-weight: 500;
+        letter-spacing: -0.01em;
+    }
+</style>

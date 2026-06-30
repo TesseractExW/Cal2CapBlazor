@@ -16,5 +16,21 @@ public record NutrientProfile(
     Weight VitaminB,
     Weight VitaminC,
     Weight VitaminD,
-    Weight VitaminE
-);
+    Weight VitaminE)
+{
+    public static readonly NutrientProfile None = new NutrientProfile(
+        new Calorie(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null),
+        new Weight(null)
+    );
+}

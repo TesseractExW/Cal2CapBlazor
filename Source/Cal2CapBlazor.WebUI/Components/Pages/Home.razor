@@ -1,0 +1,86 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+
+<PageTitle>Welcome to Cal2Cap</PageTitle>
+
+<div class="container d-flex flex-column justify-content-center align-items-center min-vh-100 py-5">
+    <div class="text-center mb-5">
+        <div class="display-1 text-primary fw-bold mb-3">
+            <i class="bi bi-lightning-charge-fill"></i> Cal2Cap
+        </div>
+        <p class="lead text-muted fs-4 max-width-md">
+            Track your meals, analyze your nutrient profiles, and take control of your health goals effortlessly.
+        </p>
+    </div>
+
+    <div class="row g-4 w-100 max-width-lg mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body text-center p-4">
+                    <div class="fs-1 text-success mb-3">🍳</div>
+                    <h5 class="card-title fw-bold">Track Meals</h5>
+                    <p class="card-text text-muted small">Log your daily food intake with details and precise timing seamlessly.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body text-center p-4">
+                    <div class="fs-1 text-info mb-3">📊</div>
+                    <h5 class="card-title fw-bold">Nutrient Profiles</h5>
+                    <p class="card-text text-muted small">Get a comprehensive breakdown of your macros, vitamins, and daily limits.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 bg-light">
+                <div class="card-body text-center p-4">
+                    <div class="fs-1 text-warning mb-3">🛡️</div>
+                    <h5 class="card-title fw-bold">Secure Accounts</h5>
+                    <p class="card-text text-muted small">Your data stays isolated, secure, and perfectly tailored to your individual profile.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <AuthorizeView>
+            <Authorized>
+                <div class="alert alert-success mb-3" role="alert">
+                    Welcome back, <strong>@context.User.Identity?.Name</strong>!
+                </div>
+                <a href="/dashboard" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow">
+                    Go to Dashboard <i class="bi bi-arrow-right ms-2"></i>
+                </a>
+            </Authorized>
+            <NotAuthorized>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <a href="/sign-in" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow">
+                        Sign In to Get Started
+                    </a>
+                    <a href="/register" class="btn btn-outline-secondary btn-lg px-5 py-3 fw-bold">
+                        Create Account
+                    </a>
+                </div>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+<style>
+    .max-width-md {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .max-width-lg {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,0.15) !important;
+    }
+</style>

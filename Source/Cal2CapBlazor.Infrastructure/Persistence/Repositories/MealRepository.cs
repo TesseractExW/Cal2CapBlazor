@@ -10,9 +10,9 @@ public class MealRepository(ApplicationDbContext dbContext) : IMealRepository
 {
     public async Task<Result> AddMealAsync(Meal meal, CancellationToken cancellationToken)
     {
-        await dbContext.Meals.AddAsync(meal, cancellationToken);
+        dbContext.Meals.Add(meal);
         await dbContext.SaveChangesAsync(cancellationToken);
-        
+
         return Result.Success();
     }
 

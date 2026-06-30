@@ -9,11 +9,7 @@ public sealed record MealDetails(string Value)
 
     public static Result<MealDetails> Create(string value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return Result<MealDetails>.Failure(new EmptyError("MealDetails", "meal details"));
-        }
-        else if (value.Length > MaximumLength)
+        if (value.Length > MaximumLength)
         {
             return Result<MealDetails>.Failure(new LengthError("MealDetails", "meal details", 0, MaximumLength));
         }
