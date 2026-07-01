@@ -8,7 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 namespace Cal2CapBlazor.Infrastructure.Authentications;
 
-public class JwtAuthStateProvider(IConfiguration configuration) : AuthenticationStateProvider
+public class JwtAuthStateProvider() : AuthenticationStateProvider
 {
     private readonly ClaimsPrincipal anomymous = new ClaimsPrincipal(new ClaimsIdentity());
 
