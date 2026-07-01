@@ -1,11 +1,10 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Application.Common.Security;
 using Cal2CapBlazor.Application.Meals.DataTransferObjects;
-using Cal2CapBlazor.Domain.Meals;
 
 namespace Cal2CapBlazor.Application.Meals.Queries;
 

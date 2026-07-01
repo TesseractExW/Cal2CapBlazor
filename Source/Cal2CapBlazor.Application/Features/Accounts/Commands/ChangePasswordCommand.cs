@@ -14,27 +14,28 @@ public record ChangePasswordCommand(
     string Password, 
     string NewPassword, 
     string ConfirmPassword) 
-    : IRequest<Result>;
+    : IRequest<Result<string>>;
 
 [RequireRole("User")]
 internal sealed class ChangePasswordCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser,
-    IPasswordHasherService passwordHasher)
-    : IRequestHandler<ChangePasswordCommand, Result>
+    IPasswordHasherService passwordHasher,
+    ITokenGenerator tokenGenerator)
+    : IRequestHandler<ChangePasswordCommand, Result<string>>
 {
-    public async Task<Result> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
-            return accountResult;
+            return Result<string>.Failure(accountResult.Error);
         }
 
         Account account = accountResult.Value;
         if (!passwordHasher.Verify(request.Password, account.HashedPassword.Value))
         {
-            return Result.Failure(new ErrorResult("ChangePassword.Incorrect", "The password is incorrect."));
+            return Result<string>.Failure(new ErrorResult("ChangePassword.Incorrect", "The password is incorrect."));
         }
 
         string hashedString = passwordHasher.Hash(request.NewPassword);
@@ -44,10 +45,17 @@ internal sealed class ChangePasswordCommandHandler(
         Result updateResult = account.UpdateHashedPassword(hashedPassword);
         if (!updateResult.IsSuccess)
         {
-            return updateResult;
+            return Result<string>.Failure(updateResult.Error);
         }
 
-        return await accountRepository.UpdateAccountAsync(account, cancellationToken);
+        Result repoResult = await accountRepository.UpdateAccountAsync(account, cancellationToken);
+        if (!repoResult.IsSuccess)
+        {
+            return Result<string>.Failure(repoResult.Error);
+        }
+
+        string token = tokenGenerator.GenerateToken(account);
+        return Result<string>.Success(token);
     }
 }
 

@@ -21,9 +21,9 @@ internal sealed class DeleteAccountCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser,
     IPasswordHasherService passwordHasher)
-    : IRequestHandler<CreateAccountCommand, Result> 
+    : IRequestHandler<DeleteAccountCommand, Result> 
 {
-    public async Task<Result> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
         Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)

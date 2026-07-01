@@ -6,7 +6,7 @@ using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
 
-namespace Cal2CapBlazor.Infrastructure.Persistance;
+namespace Cal2CapBlazor.Infrastructure.Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
 {

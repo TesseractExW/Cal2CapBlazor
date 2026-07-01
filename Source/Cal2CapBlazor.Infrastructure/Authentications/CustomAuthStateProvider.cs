@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
 
-namespace Cal2CapBlazor.Infrastructure.Services;
+namespace Cal2CapBlazor.Infrastructure.Authentications;
 
 public class CustomAuthStateProvider : AuthenticationStateProvider
 {

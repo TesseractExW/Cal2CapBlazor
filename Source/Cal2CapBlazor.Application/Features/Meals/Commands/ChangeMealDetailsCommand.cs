@@ -5,8 +5,8 @@ using Cal2CapBlazor.Domain.Common.ValueObjects;
 using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
 using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Security;
 using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Security;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
 

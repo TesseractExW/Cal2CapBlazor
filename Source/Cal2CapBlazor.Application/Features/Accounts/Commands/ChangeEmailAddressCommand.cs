@@ -10,43 +10,54 @@ using Cal2CapBlazor.Application.Common.Security;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
 
-public record ChangeEmailAddressCommand(string NewEmailAddress, string Password) : IRequest<Result>;
+public record ChangeEmailAddressCommand(
+    string NewEmailAddress, 
+    string Password) 
+    : IRequest<Result<string>>;
 
 [RequireRole("User")]
 internal sealed class ChangeEmailAddressCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser, 
-    IPasswordHasherService passwordHasher)
-    : IRequestHandler<ChangeEmailAddressCommand, Result>
+    IPasswordHasherService passwordHasher,
+    ITokenGenerator tokenGenerator)
+    : IRequestHandler<ChangeEmailAddressCommand, Result<string>>
 {
-    public async Task<Result> Handle(ChangeEmailAddressCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(ChangeEmailAddressCommand request, CancellationToken cancellationToken)
     {
         Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
-            return accountResult;
+            return Result<string>.Failure(accountResult.Error);
         }
         
         Account account = accountResult.Value;
         if (!passwordHasher.Verify(request.Password, account.HashedPassword.Value))
         {
-            return Result.Failure(new ErrorResult("ChangeEmail.IncorrectPassword", "The password is incorrect"));
+            return Result<string>.Failure(new ErrorResult("ChangeEmail.IncorrectPassword", "The password is incorrect"));
         }
 
         EmailAddress newEmailAddress = EmailAddress.Create(request.NewEmailAddress).Value;
         Result updateResult = account.UpdateEmailAddress(newEmailAddress);
         if (!updateResult.IsSuccess)
         {
-            return updateResult; 
+            return Result<string>.Failure(updateResult.Error); 
         }
 
         Result<Account> getByEmailResult = await accountRepository.GetByEmailAsync(newEmailAddress);
         if (getByEmailResult.isSuccess)
         {
-            return Result.Failure(new ErrorResult("ChangeEmail.EmailAlreadyInUse", "The provided email has already been in use."));
+            return Result<string>.Failure(new ErrorResult("ChangeEmail.EmailAlreadyInUse", "The provided email has already been in use."));
         }
 
-        return await accountRepository.UpdateAccountAsync(account, cancellationToken);
+        Result repoResult = await accountRepository.UpdateAccountAsync(account, cancellationToken);
+        if (!repoResult.IsSuccess)
+        {
+            return Result<string>.Failure(repoResult.Error);
+        }
+
+        string token = tokenGenerator.GenerateToken(account);
+        return Result<string>.Success(token);
     }
 }
 

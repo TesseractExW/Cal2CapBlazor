@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
@@ -5,7 +6,6 @@ using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
 using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Application.Common.Security;
-using FluentValidation;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
 

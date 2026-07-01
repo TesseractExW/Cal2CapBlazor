@@ -10,26 +10,27 @@ using Cal2CapBlazor.Application.Common.Security;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
 
-public record CreateAccountCommand(
+public record RegisterAccountCommand(
     string DisplayName, 
     string EmailAddress, 
     string Password, 
     string ConfirmPassword) 
-    : IRequest<Result<Guid>>;
+    : IRequest<Result<string>>;
 
 [GuestOnly]
-internal sealed class CreateAccountCommandHandler(
+internal sealed class RegisterAccountCommandHandler(
     IAccountRepository accountRepository,
-    IPasswordHasherService passwordHasher)
-    : IRequestHandler<CreateAccountCommand, Result<Guid>>
+    IPasswordHasherService passwordHasher,
+    ITokenGenerator tokenGenerator)
+    : IRequestHandler<RegisterAccountCommand, Result<string>>
 {
-    public async Task<Result<Guid>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
+    public async Task<Result<string>> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
     {
         EmailAddress emailAddress = EmailAddress.Create(request.EmailAddress).Value;
         Result<Account> getByEmailResult = await accountRepository.GetByEmailAsync(emailAddress);
         if (getByEmailResult.isSuccess)
         {
-            return Result<Guid>.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
+            return Result<string>.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
         }
 
         string hashedString = passwordHasher.Hash(request.Password);
@@ -41,16 +42,17 @@ internal sealed class CreateAccountCommandHandler(
         Result addResult = await accountRepository.AddAccountAsync(account, cancellationToken);
         if (!addResult.IsSuccess)
         {
-            return Result<Guid>.Failure(addResult.Error);
+            return Result<string>.Failure(addResult.Error);
         }
 
-        return Result<Guid>.Success(account.Id);
+        string token = tokenGenerator.GenerateToken(account);
+        return Result<string>.Success(token);
     }
 }
 
-public class CreateAccountCommandValidator : AbstractValidator<CreateAccountCommand>
+public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccountCommand>
 {
-    public CreateAccountCommandValidator()
+    public RegisterAccountCommandValidator()
     {
         RuleFor(e => e.DisplayName).MustBeValueObject(DisplayName.Create);
         RuleFor(e => e.EmailAddress).MustBeValueObject(EmailAddress.Create);

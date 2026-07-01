@@ -4,7 +4,7 @@ using Cal2CapBlazor.Domain.Common.ValueObjects;
 using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Application.Meals;
 
-namespace Cal2CapBlazor.Infrastructure.Persistance;
+namespace Cal2CapBlazor.Infrastructure.Persistence;
 
 public class MealRepository(ApplicationDbContext dbContext) : IMealRepository
 {
