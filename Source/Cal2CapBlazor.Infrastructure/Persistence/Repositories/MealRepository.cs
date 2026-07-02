@@ -1,8 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+using Cal2CapBlazor.Application.Meals;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 using Cal2CapBlazor.Domain.Meals;
-using Cal2CapBlazor.Application.Meals;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cal2CapBlazor.Infrastructure.Persistence;
 

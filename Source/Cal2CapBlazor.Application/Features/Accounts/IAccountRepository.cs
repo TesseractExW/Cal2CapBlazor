@@ -3,7 +3,6 @@ using Cal2CapBlazor.Domain.Accounts.ValueObjects;
 using Cal2CapBlazor.Domain.Common;
 
 namespace Cal2CapBlazor.Application.Accounts;
-
 public interface IAccountRepository 
 {
     Task<Result> AddAccountAsync(Account account, CancellationToken cancellationToken = default);

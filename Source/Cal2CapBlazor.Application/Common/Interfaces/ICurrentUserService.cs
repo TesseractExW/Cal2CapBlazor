@@ -1,5 +1,4 @@
 namespace Cal2CapBlazor.Application.Common.Interfaces;
-
 public interface ICurrentUserService
 {
     bool IsAuthenticated { get; }

@@ -1,11 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Application.Accounts;
 using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
-using Cal2CapBlazor.Application.Accounts;
+using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
-namespace Cal2CapBlazor.Infrastructure.Persistance.Repositories;
+namespace Cal2CapBlazor.Infrastructure.Persistence.Repositories;
 
 public class AccountRepository(ApplicationDbContext dbContext) : IAccountRepository
 {

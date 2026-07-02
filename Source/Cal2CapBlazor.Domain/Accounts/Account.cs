@@ -22,7 +22,6 @@ public class Account(
         {
             return Result.Failure(new UnchangedError("Email", "email"));
         }
-
         return Result.Success();
     }
 
@@ -32,7 +31,6 @@ public class Account(
         {
             throw new ArgumentException("The new hashed password is the same as current hashed password.");
         }
-
         return Result.Success();
     }
 
@@ -42,7 +40,6 @@ public class Account(
         {
             return Result.Failure(new UnchangedError("DisplayName", "display name"));
         }
-
         return Result.Success();
     }
 }
