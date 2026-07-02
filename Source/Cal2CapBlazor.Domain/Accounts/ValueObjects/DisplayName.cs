@@ -2,7 +2,6 @@ using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Accounts.ValueObjects;
-
 public sealed record DisplayName(string Value)
 {
     public static readonly int MinimumLength = 3;

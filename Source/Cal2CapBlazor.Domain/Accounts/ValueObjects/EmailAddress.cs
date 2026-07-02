@@ -3,7 +3,6 @@ using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Accounts.ValueObjects;
-
 public partial record EmailAddress(string Value)
 {
     [GeneratedRegex( @"^[^@\s]+@[^@\s]+\.[^@\s]+$", 

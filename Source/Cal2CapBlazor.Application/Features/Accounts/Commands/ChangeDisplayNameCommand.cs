@@ -1,49 +1,55 @@
-using FluentValidation;
-using MediatR;
-using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Application.Accounts.DataTransferObjects;
+using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Extensions;
-using Cal2CapBlazor.Application.Common.Security;
+using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
+using FluentValidation;
+using MediatR;
+using Response = Cal2CapBlazor.Domain.Common.Result<
+    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountAuthenticationDto>;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
-
 public record ChangeDisplayNameCommand(
     string NewDisplayName, 
     string Password) 
-    : IRequest<Result>;
+    : IRequest<Response>;
 
-[RequireRole("User")]
 internal sealed class ChangeDisplayNameCommandHandler(
     IAccountRepository accountRepository, 
     ICurrentUserService currentUser,
     IPasswordHasherService passwordHasher)
-    : IRequestHandler<ChangeDisplayNameCommand, Result>
+    : IRequestHandler<ChangeDisplayNameCommand, Response>
 {
-    public async Task<Result> Handle(ChangeDisplayNameCommand request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(ChangeDisplayNameCommand request, CancellationToken cancellationToken)
     {
         Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
-            return accountResult;
+            return Response.Failure(accountResult.Error);
         }
 
         Account account = accountResult.Value;
         if (!passwordHasher.Verify(request.Password, account.HashedPassword.Value))
         {
-            return Result.Failure(new ErrorResult("ChangeDisplayName.IncorrectPassword", "The password is incorrect"));
+            return Response.Failure(new ErrorResult("ChangeDisplayName.IncorrectPassword", "The password is incorrect"));
         }
 
         DisplayName newDisplayName = DisplayName.Create(request.NewDisplayName).Value;
         Result updateResult = account.UpdateDisplayName(newDisplayName);
         if (!updateResult.IsSuccess)
         {
-            return updateResult; 
+            return Response.Failure(updateResult.Error); 
         }
 
-        return await accountRepository.UpdateAccountAsync(account, cancellationToken);
+        Result repoResult = await accountRepository.UpdateAccountAsync(account, cancellationToken);
+        if (!repoResult.IsSuccess)
+        {
+            return Response.Failure(repoResult.Error);
+        }
+        
+        return Response.Success(new AccountAuthenticationDto(account.Id, account.EmailAddress.Value));
     }
 }
 

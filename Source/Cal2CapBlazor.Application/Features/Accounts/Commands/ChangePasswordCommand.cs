@@ -1,61 +1,58 @@
-using FluentValidation;
-using MediatR;
-using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Application.Accounts.DataTransferObjects;
+using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Extensions;
-using Cal2CapBlazor.Application.Common.Security;
+using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
+using FluentValidation;
+using MediatR;
+using Response = Cal2CapBlazor.Domain.Common.Result<
+    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountAuthenticationDto>;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
-
 public record ChangePasswordCommand(
     string Password, 
     string NewPassword, 
     string ConfirmPassword) 
-    : IRequest<Result<string>>;
+    : IRequest<Response>;
 
-[RequireRole("User")]
 internal sealed class ChangePasswordCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser,
-    IPasswordHasherService passwordHasher,
-    ITokenGenerator tokenGenerator)
-    : IRequestHandler<ChangePasswordCommand, Result<string>>
+    IPasswordHasherService passwordHasher)
+    : IRequestHandler<ChangePasswordCommand, Response>
 {
-    public async Task<Result<string>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
         if (!accountResult.IsSuccess)
         {
-            return Result<string>.Failure(accountResult.Error);
+            return Response.Failure(accountResult.Error);
         }
-
         Account account = accountResult.Value;
         if (!passwordHasher.Verify(request.Password, account.HashedPassword.Value))
         {
-            return Result<string>.Failure(new ErrorResult("ChangePassword.Incorrect", "The password is incorrect."));
+            return Response.Failure(new ErrorResult("ChangePassword.Incorrect", "The password is incorrect."));
         }
 
         string hashedString = passwordHasher.Hash(request.NewPassword);
         HashedPassword hashedPassword = HashedPassword.Create(hashedString).Value;
-        // throw argument exception
 
+        // throw argument exception
         Result updateResult = account.UpdateHashedPassword(hashedPassword);
         if (!updateResult.IsSuccess)
         {
-            return Result<string>.Failure(updateResult.Error);
+            return Response.Failure(updateResult.Error);
         }
-
+        
         Result repoResult = await accountRepository.UpdateAccountAsync(account, cancellationToken);
         if (!repoResult.IsSuccess)
         {
-            return Result<string>.Failure(repoResult.Error);
+            return Response.Failure(repoResult.Error);
         }
 
-        string token = tokenGenerator.GenerateToken(account);
-        return Result<string>.Success(token);
+        return Response.Success(new AccountAuthenticationDto(account.Id, account.EmailAddress.Value));
     }
 }
 

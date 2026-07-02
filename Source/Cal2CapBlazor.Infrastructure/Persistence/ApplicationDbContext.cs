@@ -1,10 +1,10 @@
 using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
-using Cal2CapBlazor.Domain.Meals;
-using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Application.Common.Interfaces;
+using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
+using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cal2CapBlazor.Infrastructure.Persistence;
 

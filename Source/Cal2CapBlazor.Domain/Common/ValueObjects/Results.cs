@@ -1,7 +1,6 @@
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Common;
-
 public record Result
 {
     public bool IsSuccess { get; }

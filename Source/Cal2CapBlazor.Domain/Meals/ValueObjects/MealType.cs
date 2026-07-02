@@ -1,5 +1,4 @@
 namespace Cal2CapBlazor.Domain.Meals.ValueObjects;
-
 [Flags]
 public enum MealType
 {

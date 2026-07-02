@@ -2,7 +2,6 @@ using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Meals.ValueObjects;
-
 public sealed record MealName(string Value)
 {
     public static readonly int MaximumLength = 50;

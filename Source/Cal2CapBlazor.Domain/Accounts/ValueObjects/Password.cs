@@ -3,7 +3,6 @@ using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Accounts.ValueObjects;
-
 public sealed record Password(string Value)
 {
     private static readonly Regex PasswordRegex = new Regex(

@@ -1,9 +1,9 @@
 using System.Reflection;
+using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
-using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
 
 namespace Cal2CapBlazor.Application.Common.Behaviors;
 
@@ -40,7 +40,6 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
                 firstFailure.ErrorMessage
             );
 
-            // In case of TReponse = Result<T>
             if (typeof(TResponse).IsGenericType)
             {
                 MethodInfo failureMethod = typeof(Result<>)
@@ -49,7 +48,6 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
 
                 return (TResponse)failureMethod!.Invoke(null, [error])!;
             }
-
             return (TResponse)Result.Failure(error);
         }
 

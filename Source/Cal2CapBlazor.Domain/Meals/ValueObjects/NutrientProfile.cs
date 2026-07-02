@@ -1,5 +1,4 @@
 namespace Cal2CapBlazor.Domain.Meals.ValueObjects;
-
 public record NutrientProfile(
     // Macronutritions
     Calorie Calorie,

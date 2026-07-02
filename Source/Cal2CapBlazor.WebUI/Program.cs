@@ -1,10 +1,8 @@
 using Cal2CapBlazor.Application;
 using Cal2CapBlazor.Infrastructure;
 using Cal2CapBlazor.WebUI.Components;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Cal2CapBlazor.WebUI;
-
 internal class Program 
 {
     static void Main(string[] args)
@@ -40,6 +38,9 @@ internal class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // Minimal API TODO
+
         app.Run();
     }
 }

@@ -1,14 +1,12 @@
-using System.Text;
-using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+using System.Text;
 using Cal2CapBlazor.Domain.Accounts;
-using Cal2CapBlazor.Application.Common.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Cal2CapBlazor.Infrastructure.Services.Auths;
-
-public class JwtTokenGenerator(IConfiguration configuration) : ITokenGenerator
+public class JwtTokenGenerator(IConfiguration configuration)
 {
     public string GenerateToken(Account account)
     {
@@ -29,7 +27,6 @@ public class JwtTokenGenerator(IConfiguration configuration) : ITokenGenerator
             expires: DateTime.Now.AddDays(3),
             signingCredentials: credentials
         );
-
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

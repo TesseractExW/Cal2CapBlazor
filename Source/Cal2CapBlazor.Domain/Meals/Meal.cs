@@ -3,7 +3,6 @@ using Cal2CapBlazor.Domain.Common.ValueObjects;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
 
 namespace Cal2CapBlazor.Domain.Meals;
-
 public class Meal(
     Guid id, 
     Guid accountId, 
@@ -29,7 +28,6 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("MealName", "meal name"));
         }
-
         return Result.Success();
     }
 
@@ -39,7 +37,6 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("MealDetails", "meal details"));
         }
-
         return Result.Success();
     }
 
@@ -47,7 +44,6 @@ public class Meal(
     public Result UpdateMealType(MealType mealType)
     {
         MealType = mealType;
-
         return Result.Success();
     }
 
@@ -57,7 +53,6 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("InTakeTime", "intake time"));
         }
-
         return Result.Success();
     }
 
@@ -67,7 +62,6 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("NutrientProfile", "nutrient profile"));
         }
-
         return Result.Success();
     }
 }

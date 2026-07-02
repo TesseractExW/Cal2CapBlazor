@@ -1,6 +1,6 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Components.Authorization;
 using Cal2CapBlazor.Application.Common.Interfaces;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Cal2CapBlazor.Infrastructure.Services;
 

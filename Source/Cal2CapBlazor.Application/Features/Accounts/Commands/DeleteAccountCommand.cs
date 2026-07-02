@@ -1,22 +1,19 @@
-using FluentValidation;
-using MediatR;
-using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Extensions;
-using Cal2CapBlazor.Application.Common.Security;
+using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
+using FluentValidation;
+using MediatR;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
-
 public record DeleteAccountCommand(
     string EmailAddress, 
     string Password, 
     string ConfirmPassword) 
     : IRequest<Result>;
 
-[RequireRole("User")]
 internal sealed class DeleteAccountCommandHandler(
     IAccountRepository accountRepository,
     ICurrentUserService currentUser,

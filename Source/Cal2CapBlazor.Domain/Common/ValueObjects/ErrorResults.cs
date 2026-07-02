@@ -1,5 +1,4 @@
 namespace Cal2CapBlazor.Domain.Common.ValueObjects;
-
 public record ErrorResult(string Id, string Message)
 {
     public static readonly ErrorResult None = new ErrorResult(string.Empty, string.Empty);

@@ -1,14 +1,12 @@
-using FluentValidation;
-using MediatR;
+using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Extensions;
-using Cal2CapBlazor.Application.Common.Security;
+using FluentValidation;
+using MediatR;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
-
 public record CreateMealCommand(
     string MealName, 
     string MealDetails,
@@ -16,7 +14,6 @@ public record CreateMealCommand(
     DateTime InTakeTime)
     : IRequest<Result>;
 
-[RequireRole("User")]
 internal sealed class CreateMealCommandHandler(
     IMealRepository mealRepository,
     ICurrentUserService currentUser)
@@ -33,7 +30,6 @@ internal sealed class CreateMealCommandHandler(
             request.InTakeTime,
             NutrientProfile.None
         );
-
         return await mealRepository.AddMealAsync(meal);
     }
 }

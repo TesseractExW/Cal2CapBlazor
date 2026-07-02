@@ -1,18 +1,16 @@
-using FluentValidation;
-using MediatR;
+using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
 using Cal2CapBlazor.Domain.Meals;
 using Cal2CapBlazor.Domain.Meals.ValueObjects;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Extensions;
-using Cal2CapBlazor.Application.Common.Security;
+using FluentValidation;
+using MediatR;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
 
 public record ChangeMealDetailsCommand(Guid Id, string MealDetails) : IRequest<Result>;
 
-[RequireRole("User")]
 internal sealed class ChangeMealDetailsCommandHandler(
     IMealRepository mealRepository,
     ICurrentUserService currentUser)
@@ -38,7 +36,6 @@ internal sealed class ChangeMealDetailsCommandHandler(
         {
             return updateResult;
         }
-
         return await mealRepository.UpdateMealAsync(meal);
     }
 }

@@ -1,13 +1,11 @@
-using MediatR;
-using Microsoft.EntityFrameworkCore;
+using Cal2CapBlazor.Application.Common.Interfaces;
+using Cal2CapBlazor.Application.Meals.DataTransferObjects;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Meals;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Security;
-using Cal2CapBlazor.Application.Meals.DataTransferObjects;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cal2CapBlazor.Application.Meals.Queries;
-
 public record PagedMealsQueryReponse(
     IReadOnlyCollection<MealItemDto> Items,
     int TotalPage,
@@ -19,7 +17,6 @@ public record GetPagedMealsQuery(
     string? SearchTerm) 
     : IRequest<Result<PagedMealsQueryReponse>>;
 
-[RequireRole("User")]
 internal sealed class GetPagedMealsQueryHandler(
     IApplicationDbContext dbContext,
     ICurrentUserService currentUser)
@@ -77,7 +74,6 @@ internal sealed class GetPagedMealsQueryHandler(
             totalPage,
             totalCount
         );
-
         return Result<PagedMealsQueryReponse>.Success(reponse);
     }
 }

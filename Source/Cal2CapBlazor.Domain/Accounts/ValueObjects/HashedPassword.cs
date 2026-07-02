@@ -1,7 +1,6 @@
 using Cal2CapBlazor.Domain.Common;
 
 namespace Cal2CapBlazor.Domain.Accounts.ValueObjects;
-
 public sealed record HashedPassword(string Value)
 {
     public static readonly int MaximumLength = 90;

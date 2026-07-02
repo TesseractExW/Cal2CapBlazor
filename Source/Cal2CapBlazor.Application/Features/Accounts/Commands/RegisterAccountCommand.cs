@@ -1,36 +1,35 @@
-using FluentValidation;
-using MediatR;
-using Cal2CapBlazor.Domain.Common;
-using Cal2CapBlazor.Domain.Common.ValueObjects;
+using Cal2CapBlazor.Application.Accounts.DataTransferObjects;
+using Cal2CapBlazor.Application.Common.Extensions;
+using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
-using Cal2CapBlazor.Application.Common.Interfaces;
-using Cal2CapBlazor.Application.Common.Extensions;
-using Cal2CapBlazor.Application.Common.Security;
+using Cal2CapBlazor.Domain.Common;
+using Cal2CapBlazor.Domain.Common.ValueObjects;
+using FluentValidation;
+using MediatR;
+using Response = Cal2CapBlazor.Domain.Common.Result<
+    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountAuthenticationDto>;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
-
 public record RegisterAccountCommand(
     string DisplayName, 
     string EmailAddress, 
     string Password, 
     string ConfirmPassword) 
-    : IRequest<Result<string>>;
+    : IRequest<Response>;
 
-[GuestOnly]
 internal sealed class RegisterAccountCommandHandler(
     IAccountRepository accountRepository,
-    IPasswordHasherService passwordHasher,
-    ITokenGenerator tokenGenerator)
-    : IRequestHandler<RegisterAccountCommand, Result<string>>
+    IPasswordHasherService passwordHasher)
+    : IRequestHandler<RegisterAccountCommand, Response>
 {
-    public async Task<Result<string>> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
+    public async Task<Response> Handle(RegisterAccountCommand request, CancellationToken cancellationToken)
     {
         EmailAddress emailAddress = EmailAddress.Create(request.EmailAddress).Value;
         Result<Account> getByEmailResult = await accountRepository.GetByEmailAsync(emailAddress);
         if (getByEmailResult.isSuccess)
         {
-            return Result<string>.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
+            return Response.Failure(new ErrorResult("CreateAccount.EmailAlreadyInUse", "The provided email has already been in use."));
         }
 
         string hashedString = passwordHasher.Hash(request.Password);
@@ -42,11 +41,9 @@ internal sealed class RegisterAccountCommandHandler(
         Result addResult = await accountRepository.AddAccountAsync(account, cancellationToken);
         if (!addResult.IsSuccess)
         {
-            return Result<string>.Failure(addResult.Error);
+            return Response.Failure(addResult.Error);
         }
-
-        string token = tokenGenerator.GenerateToken(account);
-        return Result<string>.Success(token);
+        return Response.Success(new AccountAuthenticationDto(account.Id, account.EmailAddress.Value));
     }
 }
 
