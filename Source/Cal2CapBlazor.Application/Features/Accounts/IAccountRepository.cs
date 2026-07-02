@@ -1,6 +1,6 @@
-using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Accounts;
 using Cal2CapBlazor.Domain.Accounts.ValueObjects;
+using Cal2CapBlazor.Domain.Common;
 
 namespace Cal2CapBlazor.Application.Accounts;
 
