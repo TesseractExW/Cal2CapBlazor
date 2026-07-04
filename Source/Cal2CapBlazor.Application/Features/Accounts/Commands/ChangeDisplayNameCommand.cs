@@ -8,7 +8,7 @@ using Cal2CapBlazor.Domain.Common.ValueObjects;
 using FluentValidation;
 using MediatR;
 using Response = Cal2CapBlazor.Domain.Common.Result<
-    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountAuthenticationDto>;
+    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountProfileDto>;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
 public record ChangeDisplayNameCommand(
@@ -18,13 +18,13 @@ public record ChangeDisplayNameCommand(
 
 internal sealed class ChangeDisplayNameCommandHandler(
     IAccountRepository accountRepository, 
-    ICurrentUserService currentUser,
+    IUserContext userContext,
     IPasswordHasherService passwordHasher)
     : IRequestHandler<ChangeDisplayNameCommand, Response>
 {
     public async Task<Response> Handle(ChangeDisplayNameCommand request, CancellationToken cancellationToken)
     {
-        Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
+        Result<Account> accountResult = await accountRepository.GetByIdAsync(userContext.Id, cancellationToken);
         if (!accountResult.IsSuccess)
         {
             return Response.Failure(accountResult.Error);
@@ -49,7 +49,10 @@ internal sealed class ChangeDisplayNameCommandHandler(
             return Response.Failure(repoResult.Error);
         }
         
-        return Response.Success(new AccountAuthenticationDto(account.Id, account.EmailAddress.Value));
+        return Response.Success(new AccountProfileDto(
+            account.Id, 
+            account.EmailAddress.Value,
+            account.DisplayName.Value));
     }
 }
 

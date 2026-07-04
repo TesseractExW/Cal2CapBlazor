@@ -17,7 +17,7 @@ public record ChangeMealNutrientCommand(
 
 internal sealed class ChangeMealNutrientCommandHanslder(
     IMealRepository mealRepository,
-    ICurrentUserService currentUser)
+    IUserContext userContext)
     : IRequestHandler<ChangeMealNutrientCommand, Result>
 {
     public async Task<Result> Handle(ChangeMealNutrientCommand request, CancellationToken cancellationToken)
@@ -29,7 +29,7 @@ internal sealed class ChangeMealNutrientCommandHanslder(
         }
 
         Meal meal = mealResult.Value;
-        if (meal.AccountId != currentUser.AccountId)
+        if (meal.AccountId != userContext.Id)
         {
             return Result.Failure(new ErrorResult("ChangeMeal.InvalidOwnership", "The meal belongs to different ownership."));
         }

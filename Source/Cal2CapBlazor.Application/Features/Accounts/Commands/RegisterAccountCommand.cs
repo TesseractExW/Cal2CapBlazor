@@ -8,7 +8,7 @@ using Cal2CapBlazor.Domain.Common.ValueObjects;
 using FluentValidation;
 using MediatR;
 using Response = Cal2CapBlazor.Domain.Common.Result<
-    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountAuthenticationDto>;
+    Cal2CapBlazor.Application.Accounts.DataTransferObjects.AccountProfileDto>;
 
 namespace Cal2CapBlazor.Application.Accounts.Commands;
 public record RegisterAccountCommand(
@@ -43,7 +43,11 @@ internal sealed class RegisterAccountCommandHandler(
         {
             return Response.Failure(addResult.Error);
         }
-        return Response.Success(new AccountAuthenticationDto(account.Id, account.EmailAddress.Value));
+
+        return Response.Success(new AccountProfileDto(
+            account.Id, 
+            account.EmailAddress.Value,
+            account.DisplayName.Value));
     }
 }
 

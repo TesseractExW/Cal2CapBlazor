@@ -7,8 +7,8 @@ using Cal2CapBlazor.Domain.Meals.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cal2CapBlazor.Infrastructure.Persistence;
-
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IApplicationDbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+    : DbContext(options), IApplicationDbContext
 {
     public DbSet<Account> Accounts => Set<Account>();
     public DbSet<Meal> Meals => Set<Meal>();

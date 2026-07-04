@@ -13,7 +13,7 @@ public record ChangeMealNameCommand(Guid Id, string MealName) : IRequest<Result>
 
 internal sealed class ChangeMealNameCommandHandler(
     IMealRepository mealRepository,
-    ICurrentUserService currentUser)
+    IUserContext userContext)
     : IRequestHandler<ChangeMealNameCommand, Result>
 {
     public async Task<Result> Handle(ChangeMealNameCommand request, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ internal sealed class ChangeMealNameCommandHandler(
         }
 
         Meal meal = mealResult.Value;
-        if (meal.AccountId != currentUser.AccountId)
+        if (meal.AccountId != userContext.Id)
         {
             return Result.Failure(new ErrorResult("ChangeMeal.InvalidOwnership", "The meal belongs to different ownership."));
         }

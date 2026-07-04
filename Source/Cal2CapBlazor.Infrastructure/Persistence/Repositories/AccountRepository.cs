@@ -48,6 +48,7 @@ public class AccountRepository(ApplicationDbContext dbContext) : IAccountReposit
     public async Task<Result<Account>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         Account? account = await dbContext.Accounts
+            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         if (account is null)
         {

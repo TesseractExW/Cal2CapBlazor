@@ -24,7 +24,7 @@ public partial record EmailAddress(string Value)
         }
         else if (email.Length > MaximumLength)
         {
-            return Result<EmailAddress>.Failure(new WhitespaceError("Email", "email address"));
+            return Result<EmailAddress>.Failure(new LengthError("Email", "email address", 0, MaximumLength));
         }
         else if (!EmailFormat().IsMatch(email))
         {

@@ -34,7 +34,9 @@ public class MealRepository(ApplicationDbContext dbContext) : IMealRepository
 
     public async Task<Result<Meal>> GetMealById(Guid Id, CancellationToken cancellationToken)
     {
-        Meal? meal = await dbContext.Meals.FirstOrDefaultAsync(e => e.Id == Id, cancellationToken);
+        Meal? meal = await dbContext.Meals
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == Id, cancellationToken);
         if (meal is null)
         {
             return Result<Meal>.Failure(new ErrorResult("Meal.NotFound", "The meal does not exist."));

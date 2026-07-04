@@ -16,14 +16,14 @@ public record CreateMealCommand(
 
 internal sealed class CreateMealCommandHandler(
     IMealRepository mealRepository,
-    ICurrentUserService currentUser)
+    IUserContext userContext)
     : IRequestHandler<CreateMealCommand, Result>
 {
     public async Task<Result> Handle(CreateMealCommand request, CancellationToken cancellationToken)
     {
         Meal meal = new Meal(
             Guid.CreateVersion7(),
-            currentUser.AccountId,
+            userContext.Id,
             MealName.Create(request.MealName).Value,
             MealDetails.Create(request.MealDetails).Value,
             (MealType)request.MealType,

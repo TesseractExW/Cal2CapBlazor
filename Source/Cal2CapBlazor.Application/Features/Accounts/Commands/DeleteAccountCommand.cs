@@ -16,13 +16,13 @@ public record DeleteAccountCommand(
 
 internal sealed class DeleteAccountCommandHandler(
     IAccountRepository accountRepository,
-    ICurrentUserService currentUser,
+    IUserContext userContext,
     IPasswordHasherService passwordHasher)
     : IRequestHandler<DeleteAccountCommand, Result> 
 {
     public async Task<Result> Handle(DeleteAccountCommand request, CancellationToken cancellationToken)
     {
-        Result<Account> accountResult = await accountRepository.GetByIdAsync(currentUser.AccountId, cancellationToken);
+        Result<Account> accountResult = await accountRepository.GetByIdAsync(userContext.Id, cancellationToken);
         if (!accountResult.IsSuccess)
         {
             return accountResult;
@@ -35,7 +35,7 @@ internal sealed class DeleteAccountCommandHandler(
             return Result.Failure(new ErrorResult("DeleteAccount.Incorrect", "the password or the email is incorrect"));
         }
 
-        return await accountRepository.DeleteAccountAsync(account);
+        return Result.Success();
     }
 }
 

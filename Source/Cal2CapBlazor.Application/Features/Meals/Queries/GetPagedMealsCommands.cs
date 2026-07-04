@@ -19,7 +19,7 @@ public record GetPagedMealsQuery(
 
 internal sealed class GetPagedMealsQueryHandler(
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUser)
+    IUserContext userContext)
     : IRequestHandler<GetPagedMealsQuery, Result<PagedMealsQueryReponse>>
 {
     public async Task<Result<PagedMealsQueryReponse>> Handle(
@@ -31,7 +31,7 @@ internal sealed class GetPagedMealsQueryHandler(
 
         IQueryable<Meal> mealQuery  = dbContext.Meals
             .AsNoTracking()
-            .Where(e => e.AccountId == currentUser.AccountId);
+            .Where(e => e.AccountId == userContext.Id);
 
         if (!string.IsNullOrWhiteSpace(query.SearchTerm))
         {

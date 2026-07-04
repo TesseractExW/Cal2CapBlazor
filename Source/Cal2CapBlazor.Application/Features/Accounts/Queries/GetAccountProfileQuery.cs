@@ -1,3 +1,4 @@
+using Cal2CapBlazor.Application.Accounts.DataTransferObjects;
 using Cal2CapBlazor.Application.Common.Interfaces;
 using Cal2CapBlazor.Domain.Common;
 using Cal2CapBlazor.Domain.Common.ValueObjects;
@@ -5,23 +6,22 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cal2CapBlazor.Application.Accounts.Queries;
-public record AccountProfileResponse(string Email, string DisplayName);
-
-public record GetAccountProfitQuery : IRequest<Result<AccountProfileResponse>>;
+public record GetAccountProfitQuery : IRequest<Result<AccountProfileDto>>;
 
 internal sealed class GetAccountProfitQueryHandler(
     IApplicationDbContext dbContext,
-    ICurrentUserService currentUser)
-    : IRequestHandler<GetAccountProfitQuery, Result<AccountProfileResponse>>
+    IUserContext userContext)
+    : IRequestHandler<GetAccountProfitQuery, Result<AccountProfileDto>>
 {
-    public async Task<Result<AccountProfileResponse>> Handle(
+    public async Task<Result<AccountProfileDto>> Handle(
         GetAccountProfitQuery query, 
         CancellationToken cancellationToken)
     {
-       AccountProfileResponse? profile = await dbContext.Accounts
+       AccountProfileDto? profile = await dbContext.Accounts
             .AsNoTracking()
-            .Where(e => e.Id == currentUser.AccountId)
-            .Select(x => new AccountProfileResponse(
+            .Where(e => e.Id == userContext.Id)
+            .Select(x => new AccountProfileDto(
+                x.Id,
                 x.EmailAddress.Value,
                 x.DisplayName.Value
             ))
@@ -29,8 +29,8 @@ internal sealed class GetAccountProfitQueryHandler(
 
         if (profile is null)
         {
-            return Result<AccountProfileResponse>.Failure(new ErrorResult("GetAccountProfile.AccountNotFound", "Account profile could not be found."));
+            return Result<AccountProfileDto>.Failure(new ErrorResult("GetAccountProfile.AccountNotFound", "Account profile could not be found."));
         }
-        return Result<AccountProfileResponse>.Success(profile);
+        return Result<AccountProfileDto>.Success(profile);
     }
 }

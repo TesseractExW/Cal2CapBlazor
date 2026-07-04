@@ -1,0 +1,59 @@
+@page "/register"
+@rendermode InteractiveWebAssembly
+
+@using Cal2CapBlazor.Presentation.Client.DataTransferObjects
+@using Cal2CapBlazor.Presentation.Client.Infrastructure
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<h3>Register Account</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+<div>
+    <label>Display Name:</label>
+    <input @bind="Model.DisplayName" />
+</div>
+<div>
+    <label>Email:</label>
+    <input type="email" @bind="Model.EmailAddress" />
+</div>
+<div>
+    <label>Password:</label>
+    <input type="password" @bind="Model.Password" />
+</div>
+<div>
+    <label>Confirm Password:</label>
+    <input type="password" @bind="Model.ConfirmPassword" />
+</div>
+<button @onclick="HandleRegister">Register</button>
+
+@code {
+    private RegisterAccountViewModel Model = new();
+    private string ErrorMessage = "";
+
+    private async Task HandleRegister()
+    {
+        ErrorMessage = "";
+        
+        var response = await Http.PostAsJsonAsync("/accounts/commands/register-account", Model);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var dto = await response.Content.ReadFromJsonAsync<AccountProfileView>();
+            if (dto != null)
+            {
+                ((WasmAuthenticationStateProvider)AuthStateProvider).UpdateState(dto);
+            }
+            Navigation.NavigateTo("/dashboard");
+        }
+        else
+        {
+            ErrorMessage = "Registration failed. Check inputs.";
+        }
+    }
+}

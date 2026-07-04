@@ -1,0 +1,104 @@
+@page "/settings"
+@rendermode InteractiveWebAssembly
+
+@using Cal2CapBlazor.Presentation.Client.DataTransferObjects
+@using Cal2CapBlazor.Presentation.Client.Infrastructure
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+
+<AuthorizeView>
+    <Authorized>
+        <h2>Account Settings</h2>
+
+        @if (Profile != null)
+        {
+            <div style="background-color: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                <h3>Current Profile</h3>
+                <p><strong>Account ID:</strong> @Profile.Id</p>
+                <p><strong>Display Name:</strong> @Profile.DisplayName</p>
+                <p><strong>Email:</strong> @Profile.Email</p>
+            </div>
+        }
+        else
+        {
+            <p><em>Loading profile...</em></p>
+        }
+
+        <hr />
+        
+        <h3>Change Display Name</h3>
+        <div>
+            <label>New Name:</label>
+            <input @bind="NameModel.NewDisplayName" placeholder="Enter new name" />
+            <label>Current Password:</label>
+            <input type="password" @bind="NameModel.Password" />
+            <button @onclick="UpdateName">Update Name</button>
+        </div>
+
+        <hr />
+        
+        <h3>Change Email</h3>
+        <div>
+            <label>New Email:</label>
+            <input type="email" @bind="EmailModel.NewEmailAddress" placeholder="Enter new email" />
+            <label>Current Password:</label>
+            <input type="password" @bind="EmailModel.Password" />
+            <button @onclick="UpdateEmail">Update Email</button>
+        </div>
+
+    </Authorized>
+    <NotAuthorized>
+        <p>Please log in to view settings.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private AccountProfileView? Profile;
+    private ChangeDisplayNameViewModel NameModel = new();
+    private ChangeEmailAddressViewModel EmailModel = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProfile();
+    }
+
+    private async Task LoadProfile()
+    {
+        try
+        {
+            Profile = await Http.GetFromJsonAsync<AccountProfileView>("/accounts/queries/get-account-profile");
+        }
+        catch (HttpRequestException)
+        {
+        }
+    }
+
+    private async Task UpdateName()
+    {
+        var response = await Http.PutAsJsonAsync("/accounts/commands/change-display-name", NameModel);
+        await HandleAuthUpdateResponse(response);
+    }
+
+    private async Task UpdateEmail()
+    {
+        var response = await Http.PutAsJsonAsync("/accounts/commands/change-email-address", EmailModel);
+        await HandleAuthUpdateResponse(response);
+    }
+
+    private async Task HandleAuthUpdateResponse(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var dto = await response.Content.ReadFromJsonAsync<AccountProfileView>();
+            if (dto != null)
+            {
+                ((WasmAuthenticationStateProvider)AuthStateProvider).UpdateState(dto);
+                
+                NameModel = new();
+                EmailModel = new();
+
+                await LoadProfile();
+            }
+        }
+    }
+}

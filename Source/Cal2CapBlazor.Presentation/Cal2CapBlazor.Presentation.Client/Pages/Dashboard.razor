@@ -1,0 +1,100 @@
+@page "/dashboard"
+@rendermode InteractiveWebAssembly
+
+@using Cal2CapBlazor.Presentation.Client.DataTransferObjects
+@inject HttpClient Http
+
+<AuthorizeView>
+    <Authorized>
+        <h2>Meal Dashboard</h2>
+
+        <h3>Add New Meal</h3>
+        <div>
+            <label>Name:</label>
+            <input @bind="NewMealModel.MealName" />
+        </div>
+        <div>
+            <label>Details:</label>
+            <input @bind="NewMealModel.MealDetails" />
+        </div>
+        <div>
+            <label>Type (Int):</label>
+            <input type="number" @bind="NewMealModel.MealType" />
+        </div>
+        <button @onclick="CreateMeal">Save Meal</button>
+
+        <hr />
+
+        <h3>Your Meals</h3>
+        <button @onclick="LoadMeals">Refresh List</button>
+
+        @if (PagedResponse != null)
+        {
+            <ul>
+                @foreach (var meal in PagedResponse.Items)
+                {
+                    <li>
+                        <strong>@meal.MealName</strong> - @meal.MealDetails (Type: @meal.MealType)
+                        <button @onclick="() => DeleteMeal(meal.Id)">Delete</button>
+                    </li>
+                }
+            </ul>
+            <p>Total Items: @PagedResponse.TotalCount | Total Pages: @PagedResponse.TotalPage</p>
+        }
+        else
+        {
+            <p>Click refresh to load meals.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>Please log in to view your meals.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CreateMealViewModel NewMealModel = new();
+    private PagedMealsViewModel? PagedResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadMeals();
+    }
+
+    private async Task LoadMeals()
+    {
+        try
+        {
+            PagedResponse = await Http.GetFromJsonAsync<PagedMealsViewModel>("/meals/queries/get-paged-meals?PageIndex=1&PageSize=10");
+        }
+        catch (HttpRequestException)
+        {
+
+        }
+    }
+
+    private async Task CreateMeal()
+    {
+        NewMealModel.InTakeTime = DateTime.UtcNow;
+        
+        var response = await Http.PostAsJsonAsync("/meals/commands/create-meal", NewMealModel);
+        if (response.IsSuccessStatusCode)
+        {
+            NewMealModel = new(); // Reset form
+            await LoadMeals();    // Refresh grid
+        }
+    }
+
+    private async Task DeleteMeal(Guid id)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Delete, "/meals/commands/delete-meal")
+        {
+            Content = JsonContent.Create(new { Id = id })
+        };
+
+        var response = await Http.SendAsync(request);
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadMeals();
+        }
+    }
+}
