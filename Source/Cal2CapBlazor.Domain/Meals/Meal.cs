@@ -28,6 +28,8 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("MealName", "meal name"));
         }
+
+        MealName = mealName;
         return Result.Success();
     }
 
@@ -37,6 +39,8 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("MealDetails", "meal details"));
         }
+
+        MealDetails = mealDetails;
         return Result.Success();
     }
 
@@ -53,6 +57,8 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("InTakeTime", "intake time"));
         }
+
+        InTakeTime = inTakeTime;
         return Result.Success();
     }
 
@@ -62,6 +68,8 @@ public class Meal(
         {
             return Result.Failure(new UnchangedError("NutrientProfile", "nutrient profile"));
         }
+
+        NutrientProfile = nutrientProfile;
         return Result.Success();
     }
 }
