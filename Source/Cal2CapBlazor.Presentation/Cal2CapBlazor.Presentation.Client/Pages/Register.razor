@@ -7,30 +7,80 @@
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthStateProvider
 
-<h3>Register Account</h3>
+<PageTitle>Cal2Cap | Sign Up</PageTitle>
 
-@if (!string.IsNullOrEmpty(ErrorMessage))
-{
-    <p style="color:red">@ErrorMessage</p>
-}
+<div class="absolute top-0 left-0 min-h-svh min-w-full flex flex-col items-center justify-center p-4 sm:p-8 py-12 overflow-y-auto bg-stone-100">
+    
+    <div class="fixed inset-0 hidden xl:block bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?q=80&w=2000&auto=format&fit=crop');">
+        <div class="absolute inset-0 bg-emerald-950/30 backdrop-blur-[3px] pointer-events-none"></div>
+    </div>
+    
+    <div class="relative z-10 w-full max-w-md xl:max-w-5xl my-auto grid grid-cols-1 xl:grid-cols-2 xl:bg-stone-50 xl:shadow-2xl rounded-md overflow-hidden xl:border border-stone-200/50">
+        
+        <div class="flex flex-col justify-center p-6 sm:p-8 md:p-12 lg:p-16">
+            <h2 class="text-emerald-950 text-3xl md:text-4xl font-bold mb-2" style="font-family: 'Playfair Display', serif;">Welcome Back</h2>
+            <p class="text-stone-500 text-sm tracking-wide mb-8" style="font-family: 'Montserrat', sans-serif;">Continue your mindful nutrition journey.</p>
 
-<div>
-    <label>Display Name:</label>
-    <input @bind="Model.DisplayName" />
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="bg-red-50/50 border-l-4 border-red-600 p-4 mb-8 rounded-r-sm">
+                    <p class="text-red-700 text-sm font-medium" style="font-family: 'Montserrat', sans-serif;">@ErrorMessage</p>
+                </div>
+            }
+
+            <div class="space-y-6" style="font-family: 'Montserrat', sans-serif;">
+                
+                <div class="flex flex-col space-y-2">
+                    <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Display Name</label>
+                    <input type="email" @bind="Model.DisplayName" 
+                           class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm w-full shadow-inner" 
+                           placeholder="Johny_12" />
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                    <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Email Address</label>
+                    <input type="email" @bind="Model.EmailAddress" 
+                           class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm w-full shadow-inner" 
+                           placeholder="you@example.com" />
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                    <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Password</label>
+                    <input type="password" @bind="Model.Password" 
+                           class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm w-full shadow-inner" 
+                           placeholder="••••••••" />
+                </div>
+
+                <div class="flex flex-col space-y-2">
+                    <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Confirm Password</label>
+                    <input type="password" @bind="Model.ConfirmPassword" 
+                           class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm w-full shadow-inner" 
+                           placeholder="••••••••" />
+                </div>
+
+                <button @onclick="HandleRegister" class="w-full bg-emerald-950 text-stone-50 px-8 py-4 text-sm font-bold uppercase tracking-[0.15em] hover:bg-emerald-800 transition-colors shadow-sm rounded-sm mt-4">
+                    Sign In
+                </button>
+            </div>
+
+            <div class="mt-8 text-center" style="font-family: 'Montserrat', sans-serif;">
+                <p class="text-stone-500 text-sm">
+                    already have an account? 
+                    <NavLink href="/login" class="text-emerald-950 font-bold hover:opacity-70 transition-opacity">Sign in here.</NavLink>
+                </p>
+            </div>
+        </div>
+
+        <div class="hidden xl:block relative bg-emerald-950">
+            <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop" 
+                 alt="Fresh ingredients" 
+                 class="absolute inset-0 w-full h-full object-cover" />
+            
+            <div class="absolute inset-0 bg-emerald-950/20 mix-blend-multiply pointer-events-none"></div>
+        </div>
+        
+    </div>
 </div>
-<div>
-    <label>Email:</label>
-    <input type="email" @bind="Model.EmailAddress" />
-</div>
-<div>
-    <label>Password:</label>
-    <input type="password" @bind="Model.Password" />
-</div>
-<div>
-    <label>Confirm Password:</label>
-    <input type="password" @bind="Model.ConfirmPassword" />
-</div>
-<button @onclick="HandleRegister">Register</button>
 
 @code {
     private RegisterAccountViewModel Model = new();
@@ -53,7 +103,8 @@
         }
         else
         {
-            ErrorMessage = "Registration failed. Check inputs.";
+            var error = await response.Content.ReadFromJsonAsync<ErrorMessage>();
+            ErrorMessage = error?.Message ?? "Invalid login attempt. Please check your credentials.";
         }
     }
 }

@@ -61,8 +61,8 @@ public class RegisterAccountCommandValidator : AbstractValidator<RegisterAccount
 
         RuleFor(e => e.ConfirmPassword)
             .NotEmpty()
-            .WithErrorCode("The confirmation password cannot be empty or consist only of whitespaces.")
+            .WithMessage("The confirmation password cannot be empty or consist only of whitespaces.")
             .Equal(x => x.Password)
-            .WithErrorCode("The passwords do not match.");
+            .WithMessage("The passwords do not match.");
     }
 }

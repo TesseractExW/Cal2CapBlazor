@@ -12,12 +12,13 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        // Issue empty POST to server to clear the physical cookie
-        await Http.PostAsync("/accounts/commands/logout", null);
+        var response = await Http.PostAsync("/accounts/commands/logout", null); 
 
-        // Reset the client-side state to anonymous
-        ((WasmAuthenticationStateProvider)AuthStateProvider).UpdateState(new AccountProfileView());
-        
-        Navigation.NavigateTo("/login");
+        if (response.IsSuccessStatusCode)
+        {
+            ((WasmAuthenticationStateProvider)AuthStateProvider).UpdateState(new AccountProfileView());
+            
+            Navigation.NavigateTo("/login");
+        }
     }
 }

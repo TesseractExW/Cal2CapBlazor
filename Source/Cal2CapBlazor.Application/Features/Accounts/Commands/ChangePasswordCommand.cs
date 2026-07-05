@@ -67,7 +67,8 @@ public class ChangePasswordCommandValidation : AbstractValidator<ChangePasswordC
 
         RuleFor(e => e.ConfirmPassword)
             .NotEmpty()
-            .Equal(x => x.NewPassword)
-            .WithErrorCode("The passwords do not match.");
+            .WithMessage("The confirmation password cannot be empty or consist only of whitespaces.")
+            .Equal(x => x.Password)
+            .WithMessage("The passwords do not match.");
     }
 }
