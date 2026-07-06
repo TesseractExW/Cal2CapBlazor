@@ -1,0 +1,24 @@
+@page "/logout"
+@rendermode InteractiveWebAssembly
+
+@using Cal2CapBlazor.Presentation.Client.DataTransferObjects
+@using Cal2CapBlazor.Presentation.Client.Infrastructure
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<h3>Logging out...</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await Http.PostAsync("/accounts/commands/logout", null); 
+
+        if (response.IsSuccessStatusCode)
+        {
+            ((WasmAuthenticationStateProvider)AuthStateProvider).UpdateState(new AccountProfileView());
+            
+            Navigation.NavigateTo("/login");
+        }
+    }
+}

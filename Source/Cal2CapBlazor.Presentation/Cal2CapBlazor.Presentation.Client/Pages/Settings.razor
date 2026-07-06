@@ -1,0 +1,253 @@
+@page "/settings"
+@rendermode InteractiveWebAssembly
+
+@using Cal2CapBlazor.Presentation.Client.DataTransferObjects
+@using Cal2CapBlazor.Presentation.Client.Infrastructure
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Cal2Cap | Account Settings</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="max-w-4xl mx-auto py-12 px-6 md:px-12">
+            
+            <div class="mb-12">
+                <h2 class="text-emerald-950 text-3xl md:text-4xl font-bold mb-2" style="font-family: 'Playfair Display', serif;">Account Settings</h2>
+                <p class="text-stone-500 text-sm tracking-wide" style="font-family: 'Montserrat', sans-serif;">Manage your profile and security preferences.</p>
+            </div>
+
+            @if (Profile != null)
+            {
+                <div class="bg-stone-100/50 border border-stone-200 p-6 md:p-8 rounded-sm mb-12 flex flex-col md:flex-row md:items-center justify-between" style="font-family: 'Montserrat', sans-serif;">
+                    <div>
+                        <h3 class="text-emerald-950 text-lg font-bold tracking-wider uppercase mb-4">Current Profile</h3>
+                        <div class="space-y-2 text-sm text-stone-600">
+                            <p><strong class="text-emerald-950 font-medium w-32 inline-block">Display Name:</strong> @Profile.DisplayName</p>
+                            <p><strong class="text-emerald-950 font-medium w-32 inline-block">Email:</strong> @Profile.Email</p>
+                        </div>
+                    </div>
+                    <div class="mt-6 md:mt-0 text-left md:text-right">
+                        <p class="text-xs text-stone-400 uppercase tracking-widest">Account ID</p>
+                        <p class="text-xs text-stone-500 font-mono mt-1">@Profile.Id</p>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="animate-pulse flex space-x-4 mb-12">
+                    <div class="flex-1 space-y-4 py-1">
+                        <div class="h-4 bg-stone-200 rounded w-3/4"></div>
+                        <div class="space-y-2">
+                            <div class="h-4 bg-stone-200 rounded"></div>
+                            <div class="h-4 bg-stone-200 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <div class="space-y-12" style="font-family: 'Montserrat', sans-serif;">
+                
+                <div class="border-t border-stone-200 pt-10">
+                    <h3 class="text-emerald-950 text-xl font-bold mb-6" style="font-family: 'Playfair Display', serif;">Change Display Name</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">New Name</label>
+                            <input @bind="NameModel.NewDisplayName" placeholder="Enter new name" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Current Password</label>
+                            <input type="password" @bind="NameModel.Password" placeholder="Required to verify" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center gap-6">
+                        <button @onclick="UpdateName" class="bg-emerald-950 text-stone-50 px-8 py-3 text-xs font-bold uppercase tracking-[0.15em] hover:bg-emerald-800 transition-colors shadow-sm rounded-sm">
+                            Update Name
+                        </button>
+                        
+                        @if (!string.IsNullOrEmpty(NameError)) { <span class="text-red-600 text-sm font-medium">@NameError</span> }
+                        @if (!string.IsNullOrEmpty(NameSuccess)) { <span class="text-emerald-700 text-sm font-medium">@NameSuccess</span> }
+                    </div>
+                </div>
+
+                <div class="border-t border-stone-200 pt-10">
+                    <h3 class="text-red-500 text-xl font-bold mb-6 flex flex-row space-x-3" style="font-family: 'Playfair Display', serif;">
+                        <p>***</p>
+                        <p>Change Email Address</p>
+                        <p>***</p>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">New Email</label>
+                            <input type="email" @bind="EmailModel.NewEmailAddress" placeholder="Enter new email" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Current Password</label>
+                            <input type="password" @bind="EmailModel.Password" placeholder="Required to verify" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center gap-6">
+                        <button @onclick="UpdateEmail" class="bg-emerald-950 text-stone-50 px-8 py-3 text-xs font-bold uppercase tracking-[0.15em] hover:bg-emerald-800 transition-colors shadow-sm rounded-sm">
+                            Update Email
+                        </button>
+                        
+                        @if (!string.IsNullOrEmpty(EmailError)) { <span class="text-red-600 text-sm font-medium">@EmailError</span> }
+                        @if (!string.IsNullOrEmpty(EmailSuccess)) { <span class="text-emerald-700 text-sm font-medium">@EmailSuccess</span> }
+                    </div>
+                </div>
+
+                <div class="border-t border-stone-200 pt-10">
+                    <h3 class="text-red-500 text-xl font-bold mb-6 flex flex-row space-x-3" style="font-family: 'Playfair Display', serif;">
+                        <p>***</p>
+                        <p>Change Password</p>
+                        <p>***</p>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Current Password</label>
+                            <input type="password" @bind="PasswordModel.Password" placeholder="Enter current" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">New Password</label>
+                            <input type="password" @bind="PasswordModel.NewPassword" placeholder="Enter new" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                        <div class="flex flex-col space-y-2">
+                            <label class="text-xs font-bold text-stone-500 uppercase tracking-widest">Confirm Password</label>
+                            <input type="password" @bind="PasswordModel.ConfirmPassword" placeholder="Confirm new" class="bg-stone-50 border border-stone-300 px-4 py-3 text-sm text-emerald-950 focus:outline-none focus:ring-1 focus:ring-emerald-950 focus:border-emerald-950 transition-colors rounded-sm" />
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex items-center gap-6">
+                        <button @onclick="UpdatePassword" class="bg-stone-200 text-emerald-950 border border-emerald-950 px-8 py-3 text-xs font-bold uppercase tracking-[0.15em] hover:bg-emerald-950 hover:text-stone-50 transition-colors shadow-sm rounded-sm">
+                            Update Password
+                        </button>
+                        
+                        @if (!string.IsNullOrEmpty(PasswordError)) { <span class="text-red-600 text-sm font-medium">@PasswordError</span> }
+                        @if (!string.IsNullOrEmpty(PasswordSuccess)) { <span class="text-emerald-700 text-sm font-medium">@PasswordSuccess</span> }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="min-h-[50vh] flex flex-col items-center justify-center text-center px-6">
+            <h2 class="text-emerald-950 text-3xl font-bold mb-4" style="font-family: 'Playfair Display', serif;">Access Denied</h2>
+            <p class="text-stone-600 mb-8" style="font-family: 'Montserrat', sans-serif;">Please log in to view and manage your account settings.</p>
+            <NavLink href="/login" class="bg-emerald-950 text-stone-50 px-8 py-3 text-sm font-bold uppercase tracking-widest rounded-sm">Sign In</NavLink>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private AccountProfileView? Profile;
+    
+    private ChangeDisplayNameViewModel NameModel = new();
+    private ChangeEmailAddressViewModel EmailModel = new();
+    private ChangePasswordViewModel PasswordModel = new();
+
+    private string? NameError, NameSuccess;
+    private string? EmailError, EmailSuccess;
+    private string? PasswordError, PasswordSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProfile();
+    }
+
+    private async Task LoadProfile()
+    {
+        try
+        {
+            Profile = await Http.GetFromJsonAsync<AccountProfileView>("/accounts/queries/get-account-profile");
+        }
+        catch (HttpRequestException)
+        {
+
+        }
+    }
+
+    private void ClearMessages()
+    {
+        NameError = NameSuccess = null;
+        EmailError = EmailSuccess = null;
+        PasswordError = PasswordSuccess = null;
+    }
+
+    private async Task UpdateName()
+    {
+        ClearMessages();
+        var response = await Http.PutAsJsonAsync("/accounts/commands/change-display-name", NameModel);
+        var result = await ProcessUpdateResponse(response);
+        
+        if (result.Success)
+        {
+            NameSuccess = "Display name updated successfully.";
+            NameModel = new(); // Clear the form
+        }
+        else
+        {
+            NameError = result.ErrorMessage;
+        }
+    }
+
+    private async Task UpdateEmail()
+    {
+        ClearMessages();
+        var response = await Http.PutAsJsonAsync("/accounts/commands/change-email-address", EmailModel);
+        var result = await ProcessUpdateResponse(response);
+        
+        if (result.Success)
+        {
+            EmailSuccess = "Email updated successfully.";
+            EmailModel = new(); // Clear the form
+        }
+        else
+        {
+            EmailError = result.ErrorMessage;
+        }
+    }
+
+    private async Task UpdatePassword()
+    {
+        ClearMessages();
+        var response = await Http.PutAsJsonAsync("/accounts/commands/change-password", PasswordModel);
+        var result = await ProcessUpdateResponse(response);
+        
+        if (result.Success)
+        {
+            PasswordSuccess = "Password updated successfully.";
+            PasswordModel = new(); // Clear the form
+        }
+        else
+        {
+            PasswordError = result.ErrorMessage;
+        }
+    }
+
+    private async Task<(bool Success, string? ErrorMessage)> ProcessUpdateResponse(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            var dto = await response.Content.ReadFromJsonAsync<AccountProfileView>();
+            if (dto != null)
+            {
+                ((WasmAuthenticationStateProvider)AuthStateProvider).UpdateState(dto);
+                await LoadProfile();
+            }
+            return (true, null);
+        }
+        else
+        {
+            var error = await response.Content.ReadFromJsonAsync<ErrorMessage>();
+            return (false, error?.Message ?? "An unknown error occurred. Please try again.");
+        }
+    }
+    
+    private class ErrorMessage
+    {
+        public string? Message { get; set; }
+    }
+}

@@ -1,0 +1,161 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Routing
+
+<PageTitle>Cal2Cap | Cultivate Your Nutrition</PageTitle>
+
+<section class="bg-stone-50 w-full relative overflow-hidden pt-12 pb-20 lg:pt-24 lg:pb-32">
+    <div class="absolute top-0 right-0 -mr-20 -mt-20 w-[30rem] h-[30rem] md:w-[40rem] md:h-[40rem] bg-stone-200/50 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center z-10">
+        
+        <div class="flex flex-col justify-center text-left order-2 lg:order-1 mt-8 lg:mt-0">
+            <div class="inline-block border border-emerald-950/20 bg-emerald-950/5 rounded-full px-4 py-1.5 mb-8 w-max">
+                <p class="text-emerald-950 uppercase tracking-[0.2em] text-[0.65rem] font-bold" style="font-family: 'Montserrat', sans-serif;">
+                    Mindful Nutrition Tracking
+                </p>
+            </div>
+            
+            <h1 class="text-emerald-950 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 md:mb-8" style="font-family: 'Playfair Display', serif;">
+                Nourish deeply.<br />
+                Thrive naturally.
+            </h1>
+            <p class="text-stone-600 text-base md:text-lg leading-relaxed mb-8 md:mb-10 max-w-lg" style="font-family: 'Montserrat', sans-serif;">
+                Step away from the screen and reconnect with what fuels you. Cal2Cap helps you track your meals and macros with a clean, natural approach—bringing balance back to your busy lifestyle.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6" style="font-family: 'Montserrat', sans-serif;">
+                <NavLink href="/register" class="w-full sm:w-auto bg-emerald-950 text-stone-50 px-8 py-4 text-sm font-bold uppercase tracking-[0.15em] text-center hover:bg-emerald-800 transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                    Get Started
+                </NavLink>
+                <NavLink href="/about" class="w-full sm:w-auto text-emerald-950 text-sm font-bold uppercase tracking-[0.15em] hover:opacity-60 transition-opacity duration-300 relative group py-2 text-center">
+                    Our Philosophy
+                    <span class="absolute -bottom-1 left-0 w-0 h-[1.5px] bg-emerald-950 transition-all duration-300 ease-in-out group-hover:w-full"></span>
+                </NavLink>
+            </div>
+        </div>
+
+        <div class="relative order-1 lg:order-2 w-full">
+            <div class="aspect-[5/3] lg:aspect-[4/5] w-full bg-stone-200 overflow-hidden shadow-2xl relative rounded-sm">
+                <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070&auto=format&fit=crop" 
+                     alt="Fresh, natural ingredients" 
+                     class="object-cover w-full h-full hover:scale-105 transition-transform duration-1000 ease-in-out" />
+                <div class="absolute inset-0 bg-emerald-950/10 mix-blend-multiply pointer-events-none"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="bg-emerald-950 w-full border-t border-emerald-900 py-10 lg:py-14">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center" style="font-family: 'Montserrat', sans-serif;">
+        <div class="flex flex-col space-y-2 text-stone-50">
+            <span class="text-xl md:text-2xl font-semibold tracking-widest" style="font-family: 'Montserrat', sans-serif;">Intuitive</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-stone-400">Seamless Logging</span>
+        </div>
+        <div class="flex flex-col space-y-2 text-stone-50">
+            <span class="text-xl md:text-2xl font-semibold tracking-widest" style="font-family: 'Montserrat', sans-serif;">Balanced</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-stone-400">Macro Harmony</span>
+        </div>
+        <div class="flex flex-col space-y-2 text-stone-50">
+            <span class="text-xl md:text-2xl font-semibold tracking-widest" style="font-family: 'Montserrat', sans-serif;">Holistic</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-stone-400">Deep Insights</span>
+        </div>
+        <div class="flex flex-col space-y-2 text-stone-50">
+            <span class="text-xl md:text-2xl font-semibold tracking-widest" style="font-family: 'Montserrat', sans-serif;">Mindful</span>
+            <span class="text-xs uppercase tracking-[0.2em] text-stone-400">Stress-Free Tracking</span>
+        </div>
+    </div>
+</div>
+
+<section class="bg-stone-50 w-full py-20 lg:py-32">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div>
+            <h2 class="text-emerald-950 text-3xl md:text-4xl lg:text-5xl font-bold mb-6" style="font-family: 'Playfair Display', serif;">
+                Capture meals without the clinical clutter.
+            </h2>
+            <p class="text-stone-600 text-base md:text-lg leading-relaxed mb-8" style="font-family: 'Montserrat', sans-serif;">
+                We stripped away the harsh lines and overwhelming data tables. Cal2Cap’s interface is designed to feel like a premium journal. Log your nutrients smoothly, visualize your daily caps instantly, and get back to your life.
+            </p>
+            <ul class="space-y-4 mb-8" style="font-family: 'Montserrat', sans-serif;">
+                <li class="flex items-start text-stone-700">
+                    <svg class="h-6 w-6 text-emerald-950 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span><strong>Intuitive Logging:</strong> Add meals in seconds.</span>
+                </li>
+                <li class="flex items-start text-stone-700">
+                    <svg class="h-6 w-6 text-emerald-950 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <span><strong>Visual Caps:</strong> See exactly where your macros stand.</span>
+                </li>
+            </ul>
+        </div>
+        <div class="relative w-full aspect-[5/3] lg:aspect-[4/3] bg-stone-200 shadow-xl rounded-sm overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053&auto=format&fit=crop" 
+                 alt="App Interface Preview" class="object-cover w-full h-full hover:scale-105 transition-transform duration-1000" />
+        </div>
+    </div>
+</section>
+
+<section class="bg-emerald-950 w-full py-20 lg:py-32">
+    <div class="max-w-7xl mx-auto px-6 md:px-8 lg:px-12">
+        
+        <div class="text-center mb-16 lg:mb-24">
+            <h2 class="text-stone-50 text-3xl md:text-4xl lg:text-5xl font-bold mb-6" style="font-family: 'Playfair Display', serif;">
+                Rooted in Your Well-being
+            </h2>
+            <p class="text-stone-300/80 text-base md:text-lg max-w-2xl mx-auto" style="font-family: 'Montserrat', sans-serif;">
+                Tracking your nutrients shouldn't feel like a spreadsheet. We designed a system that aligns with your body's natural rhythms.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            
+            <div class="bg-stone-50/5 border border-stone-50/10 p-8 lg:p-10 flex flex-col items-start hover:bg-stone-50/10 transition-colors duration-300 rounded-sm">
+                <div class="h-14 w-14 rounded-full bg-stone-50/10 flex items-center justify-center mb-6 text-stone-50">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-stone-50 text-xl font-bold tracking-wide mb-4" style="font-family: 'Montserrat', sans-serif;">Holistic Clarity</h3>
+                <p class="text-stone-400 text-sm leading-relaxed" style="font-family: 'Montserrat', sans-serif;">
+                    Gain a clear, intuitive view of your macro and micronutrients. Understand exactly what your body absorbs without the clinical clutter.
+                </p>
+            </div>
+
+            <div class="bg-stone-50/5 border border-stone-50/10 p-8 lg:p-10 flex flex-col items-start hover:bg-stone-50/10 transition-colors duration-300 rounded-sm">
+                <div class="h-14 w-14 rounded-full bg-stone-50/10 flex items-center justify-center mb-6 text-stone-50">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-stone-50 text-xl font-bold tracking-wide mb-4" style="font-family: 'Montserrat', sans-serif;">Sustained Energy</h3>
+                <p class="text-stone-400 text-sm leading-relaxed" style="font-family: 'Montserrat', sans-serif;">
+                    Perfect for days spent at a desk or in intense focus. Track meals that maintain your energy levels and prevent the mid-afternoon crash.
+                </p>
+            </div>
+
+            <div class="bg-stone-50/5 border border-stone-50/10 p-8 lg:p-10 flex flex-col items-start hover:bg-stone-50/10 transition-colors duration-300 rounded-sm">
+                <div class="h-14 w-14 rounded-full bg-stone-50/10 flex items-center justify-center mb-6 text-stone-50">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-stone-50 text-xl font-bold tracking-wide mb-4" style="font-family: 'Montserrat', sans-serif;">Cultivated Growth</h3>
+                <p class="text-stone-400 text-sm leading-relaxed" style="font-family: 'Montserrat', sans-serif;">
+                    Watch your habits evolve naturally over time. Our reporting tools let you see the long-term harvest of your daily choices.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="bg-stone-100 w-full py-20 lg:py-32 border-t border-stone-200">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="text-emerald-950 text-3xl md:text-4xl lg:text-5xl font-bold mb-6" style="font-family: 'Playfair Display', serif;">
+            Ready to plant the seed?
+        </h2>
+        <p class="text-stone-600 text-base mb-10 max-w-lg mx-auto" style="font-family: 'Montserrat', sans-serif;">
+            Join thousands of others who have traded obsessive counting for mindful, natural nutrition tracking.
+        </p>
+        <NavLink href="/register" class="inline-block border-2 border-emerald-950 bg-emerald-950 text-stone-50 px-10 py-4 text-sm font-bold uppercase tracking-[0.15em] hover:bg-transparent hover:text-emerald-950 transition-colors duration-300 w-full sm:w-auto" style="font-family: 'Montserrat', sans-serif;">
+            Begin Your Journey
+        </NavLink>
+    </div>
+</section>
