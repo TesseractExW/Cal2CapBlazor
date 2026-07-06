@@ -8,7 +8,6 @@ using FluentValidation;
 using MediatR;
 
 namespace Cal2CapBlazor.Application.Meals.Commands;
-
 public record ChangeMealDetailsCommand(Guid Id, string MealDetails) : IRequest<Result>;
 
 internal sealed class ChangeMealDetailsCommandHandler(
