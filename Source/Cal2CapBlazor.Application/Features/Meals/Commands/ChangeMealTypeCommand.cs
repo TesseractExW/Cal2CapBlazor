@@ -28,12 +28,6 @@ internal sealed class ChangeMealTypeCommandHandler(
             return Result.Failure(new ErrorResult("ChangeMeal.InvalidOwnership", "The meal belongs to different ownership."));
         }
 
-        bool isDefined = Enum.IsDefined((MealType)request.MealType);
-        if (!isDefined)
-        {
-            return Result.Failure(new ErrorResult("ChangeMeal.InvalidMealEnum", "The meal type is corrupted."));
-        }
-
         Result updateResult = meal.UpdateMealType((MealType)request.MealType);
         if (!updateResult.IsSuccess)
         {

@@ -478,7 +478,7 @@
 
     private void ToggleAddMealType(int typeValue, object? isCheckedObj)
     {
-        if (isCheckedObj is not null) 
+        if ((bool)(isCheckedObj ?? false)) 
         {
             NewMealModel.MealType |= typeValue;
         }
@@ -519,7 +519,7 @@
             return;
         }
 
-        if (isCheckedObj is not null) 
+        if ((bool)(isCheckedObj ?? false)) 
         {
             ViewingMeal.MealType |= typeValue;
         }
